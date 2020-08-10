@@ -27,7 +27,6 @@ public class UserController {
                 .withMatcher("phone", match -> match.contains())//模糊查询
                 .withMatcher("password", match -> match.contains())
                 .withIgnorePaths("id");
-
         Example <User> example = Example.of(user,matcher);
         List<User> matchUsers = userRepository.findAll(example);
         for(User matchUser :matchUsers){
@@ -36,12 +35,24 @@ public class UserController {
                 return matchUser.toString();//成功的返回
             }
         }
-        return "null";//不成功的返回
+        return "error";//不成功的返回
     }
 
     @PostMapping("/register")
-    public String register(){
-        //这还没写
-        return "hi";
+    public String register(@RequestBody User user){
+        System.out.println("reg");
+        for(User matchUser : findAll()){
+            if(matchUser.getPhone() != null && matchUser.getPhone().equals(user.getPhone())){
+                return "phoneExits";
+            }
+            if(matchUser.getWechat() != null && matchUser.getWechat().equals(user.getWechat())){
+                return "wechatExits";
+            }
+            if(matchUser.getQq() != null && matchUser.getQq().equals(user.getQq())){
+                return "qqExits";
+            }
+        }
+        userRepository.save(user);
+        return "ok";
     }
 }
