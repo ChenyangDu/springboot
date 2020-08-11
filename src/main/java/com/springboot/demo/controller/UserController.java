@@ -1,6 +1,8 @@
 package com.springboot.demo.controller;
 
+import com.springboot.demo.entity.Document;
 import com.springboot.demo.entity.User;
+import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -16,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @GetMapping("/users")
     public List<User> findAll(){
@@ -72,5 +77,28 @@ public class UserController {
     public Result userSave(@RequestBody User user){
         userRepository.save(user);
         return Result.success();
+    }
+
+    @GetMapping("/user/own")
+    public Result userOwn(@RequestParam("id") int id){
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()){
+            Document tmpDocu=new Document();
+            tmpDocu.setCreator_id(id);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withMatcher("creator_id", match -> match.endsWith())
+                    .withIgnorePaths("id")
+                    .withIgnorePaths("group_id")
+                    .withIgnorePaths("create_time")
+                    .withIgnorePaths("last_edit_time")
+                    .withIgnorePaths("is_deleted")
+                    .withIgnorePaths("is_editting")
+                    .withIgnorePaths("name");
+            Example <Document> example = Example.of(tmpDocu,matcher);
+            List<Document> myDocus=documentRepository.findAll(example);
+            return Result.success(myDocus);
+        }else{
+            return Result.error(400,"用户不存在");
+        }
     }
 }
