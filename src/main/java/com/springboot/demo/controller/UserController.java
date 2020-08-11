@@ -1,14 +1,17 @@
 package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.Document;
+import com.springboot.demo.entity.Favorite;
 import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.DocumentRepository;
+import com.springboot.demo.repository.FavoriteRepository;
 import com.springboot.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +24,9 @@ public class UserController {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     @GetMapping("/users")
     public List<User> findAll(){
@@ -104,6 +110,12 @@ public class UserController {
 
     @GetMapping("/user/favorite")
     public Result userFavorite(@RequestParam("id") int id){
-
+        List<Favorite> result = new ArrayList<>();
+        for(Favorite favorite :favoriteRepository.findAll()){
+            if (favorite.getFavorityKey().getUser_id() == id) {
+                result.add(favorite);
+            }
+        }
+        return Result.success(result);
     }
 }

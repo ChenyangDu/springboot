@@ -61,8 +61,8 @@ public class DocumentController {
         return Result.success();
     }
 
-    @GetMapping("/docement/view")
-    public Result view(@RequestParam("id") Integer id){
+    @GetMapping("/document/view")
+    public Result view(@RequestParam("doc_id") Integer id){
         String filePath = Global.DOCUMENT_PATH + id.toString() + ".html";
         try{
             return Result.success(FileTool.readFile(filePath));
@@ -73,7 +73,7 @@ public class DocumentController {
     }
 
     @GetMapping("/document/info")
-    public Result info(@RequestParam("id") Integer id){
+    public Result info(@RequestParam("doc_id") Integer id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
         if(optionalDocument.isPresent()){
             return Result.success(optionalDocument.get());
