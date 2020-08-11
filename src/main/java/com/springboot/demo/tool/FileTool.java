@@ -43,18 +43,20 @@ public class FileTool {
      * 保存文件内容
      *
      */
-    public static void writeFile(String filePath,String content) throws IOException{
+    public static void writeFile(String filePath,String content){
+        try {
+            File file = new File(filePath);
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
-        File file = new File(filePath);
-
-        // if file doesnt exists, then create it
-        if (!file.exists()) {
-            file.createNewFile();
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(content);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(content);
-        bw.close();
     }
 }
