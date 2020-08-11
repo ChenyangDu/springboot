@@ -48,10 +48,10 @@ public class UserController {
                 return Result.error(200,"手机号已被使用");
             }
             if(matchUser.getWechat() != null && matchUser.getWechat().equals(user.getWechat())){
-                return Result.error(200,"wechatExits");
+                return Result.error(200,"微信已被使用");
             }
             if(matchUser.getQq() != null && matchUser.getQq().equals(user.getQq())){
-                return Result.error(200,"qqExits");
+                return Result.error(200,"QQ已被使用");
             }
         }
         userRepository.save(user);

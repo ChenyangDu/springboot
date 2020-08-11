@@ -18,4 +18,5 @@ public class Document {
     private Date last_edit_time;
     private boolean is_deleted;
     private boolean is_editting;
+    private String name;
 }
