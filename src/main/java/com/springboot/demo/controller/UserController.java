@@ -8,6 +8,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user){
+    public Result login(@RequestBody User user){
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("phone", match -> match.contains())//模糊查询
                 .withMatcher("password", match -> match.contains())
@@ -32,27 +33,44 @@ public class UserController {
         for(User matchUser :matchUsers){
             if(matchUser.getPhone().equals(user.getPhone()) &&
             matchUser.getPassword().equals(user.getPassword())){
-                return matchUser.toString();//成功的返回
+                System.out.println(Result.success(matchUser).toString());
+                return Result.success(matchUser);//成功的返回
             }
         }
-        return "error";//不成功的返回
+
+        return Result.error(400,"账号或密码错误");//不成功的返回
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody User user){
-        System.out.println("reg");
+    public Result register(@RequestBody User user){
         for(User matchUser : findAll()){
             if(matchUser.getPhone() != null && matchUser.getPhone().equals(user.getPhone())){
-                return "phoneExits";
+                return Result.error(200,"手机号已被使用");
             }
             if(matchUser.getWechat() != null && matchUser.getWechat().equals(user.getWechat())){
-                return "wechatExits";
+                return Result.error(200,"wechatExits");
             }
             if(matchUser.getQq() != null && matchUser.getQq().equals(user.getQq())){
-                return "qqExits";
+                return Result.error(200,"qqExits");
             }
         }
         userRepository.save(user);
-        return "ok";
+        return Result.success();
+    }
+
+    @GetMapping("/user/info")
+    public Result userInfo(@RequestParam("id") int id){
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()){
+            return Result.success(optionalUser.get());
+        }else{
+            return Result.error(400,"用户不存在");
+        }
+    }
+
+    @PostMapping("/user/save")
+    public Result userSave(@RequestBody User user){
+        userRepository.save(user);
+        return Result.success();
     }
 }
