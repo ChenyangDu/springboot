@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Data
 public class Recent_read {
     @Id
-    private int user_id;
+    private Integer user_id;
     private String document_id;
 
 }

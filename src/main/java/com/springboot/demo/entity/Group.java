@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Data
 public class Group {
     @Id
-    private int id;
+    private Integer id;
     private String name;
-    private int creator_id;
+    private Integer creator_id;
 }

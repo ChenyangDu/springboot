@@ -8,9 +8,9 @@ import javax.persistence.Id;
 @Data
 public class Authority_user {
     @Id
-    private int user_id;
+    private Integer user_id;
     @Id
-    private int document_id;
+    private Integer document_id;
     private boolean can_read;
     private boolean can_comment;
     private boolean can_edit;

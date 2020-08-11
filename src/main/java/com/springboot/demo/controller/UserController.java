@@ -86,7 +86,7 @@ public class UserController {
             Document tmpDocu=new Document();
             tmpDocu.setCreator_id(id);
             ExampleMatcher matcher = ExampleMatcher.matching()
-                    .withMatcher("creator_id", match -> match.endsWith())
+                    .withMatcher("creator_id", ExampleMatcher.GenericPropertyMatcher::exact)
                     .withIgnorePaths("id")
                     .withIgnorePaths("group_id")
                     .withIgnorePaths("create_time")
@@ -100,5 +100,10 @@ public class UserController {
         }else{
             return Result.error(400,"用户不存在");
         }
+    }
+
+    @GetMapping("/user/favorite")
+    public Result userFavorite(@RequestParam("id") int id){
+
     }
 }

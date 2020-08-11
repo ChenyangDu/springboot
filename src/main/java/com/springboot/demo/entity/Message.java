@@ -8,12 +8,12 @@ import javax.persistence.Id;
 @Data
 public class Message {
     @Id
-    private int id;
-    private int receiver_id;
-    private int sender_id;
-    private int docu_id;
-    private int group_id;
-    private int message_type;
+    private Integer id;
+    private Integer receiver_id;
+    private Integer sender_id;
+    private Integer docu_id;
+    private Integer group_id;
+    private Integer message_type;
     private boolean have_read;
 
 }

@@ -8,8 +8,8 @@ import javax.persistence.Id;
 @Data
 public class Comment {
     @Id
-    private int user_id;
+    private Integer user_id;
     @Id
-    private int document_id;
+    private Integer document_id;
     private String content;
 }

@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Data
 public class User_group_relation {
     @Id
-    private int user_id;
+    private Integer user_id;
     @Id
-    private int group_id;
+    private Integer group_id;
 }
