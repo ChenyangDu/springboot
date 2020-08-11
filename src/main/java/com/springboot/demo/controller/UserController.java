@@ -2,9 +2,11 @@ package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.Document;
 import com.springboot.demo.entity.Favorite;
+import com.springboot.demo.entity.Recent_read;
 import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.FavoriteRepository;
+import com.springboot.demo.repository.Recent_readRepository;
 import com.springboot.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -21,12 +23,12 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private DocumentRepository documentRepository;
-
     @Autowired
     private FavoriteRepository favoriteRepository;
+    @Autowired
+    private Recent_readRepository recent_readRepository;
 
     @GetMapping("/users")
     public List<User> findAll(){
@@ -117,5 +119,23 @@ public class UserController {
             }
         }
         return Result.success(result);
+    }
+
+    @GetMapping("/user/recent")
+    public Result userRecent(@RequestParam("id") int id){
+        System.out.println(id);
+        Optional<Recent_read> optionalRecent_read = recent_readRepository.findById(id);
+        if(optionalRecent_read.isPresent()){
+            List<Document> result = new ArrayList<>();
+            for(String document_id : optionalRecent_read.get().getDocument_list().split(",")){
+                Optional<Document>optionalDocument = documentRepository.findById(Integer.parseInt(document_id));
+                if(optionalDocument.isPresent()){
+                    result.add(optionalDocument.get());
+                }
+            }
+            return Result.success(result);
+        }else{
+            return Result.error(400,"用户不存在/没有访问记录");
+        }
     }
 }
