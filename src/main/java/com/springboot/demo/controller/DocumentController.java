@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Optional;
 
 @CrossOrigin
@@ -35,7 +35,8 @@ public class DocumentController {
     }
     @GetMapping("/document/create")
     public Result create(@RequestParam("user_id") Integer user_id,@RequestParam("group_id") Integer group_id){
-        if(user_id != null){
+
+        if(user_id == null){
             return Result.error(400,"用户不存在");
         }
 
@@ -45,11 +46,18 @@ public class DocumentController {
         }
 
         //缺一判断团体存在的
+        if(group_id == -1){
+            group_id = null;
+        }
 
         Date now = new Date(System.currentTimeMillis());
-        Document document = new Document(null,user_id,group_id,now,
+        System.out.println(now);
+        Document document = new Document(0,user_id,group_id,now,
                 now,false,false,"newName");
+        document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
+
+        FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html","");
         return Result.success();
     }
 
