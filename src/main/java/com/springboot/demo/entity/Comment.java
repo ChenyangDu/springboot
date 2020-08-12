@@ -4,7 +4,9 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
+@Entity
 @Data
 public class Comment {
     @Id
@@ -12,4 +14,5 @@ public class Comment {
     private Integer user_id;
     private Integer document_id;
     private String content;
+    private Date time;
 }

@@ -134,7 +134,7 @@ public class UserController {
 
     @GetMapping("/user/recent")
     public Result userRecent(@RequestParam("id") int id){
-        System.out.println(id);
+        System.out.println("recent "+id);
         Optional<Recent_read> optionalRecent_read = recent_readRepository.findById(id);
         if(optionalRecent_read.isPresent()){
             List<Document> result = new ArrayList<>();
