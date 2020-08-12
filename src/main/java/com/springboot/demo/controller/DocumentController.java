@@ -56,7 +56,7 @@ public class DocumentController {
         Date now = new Date(System.currentTimeMillis());
         System.out.println(now);
         Document document = new Document(0,user_id,group_id,now,
-                now,false,false,"newName");
+                now,false,true,"newName",0);
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
         Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());
@@ -123,6 +123,9 @@ public class DocumentController {
             }
             else {
                 document.setIs_editting(false);
+                Date now = new Date(System.currentTimeMillis());
+                document.setEdit_times(document.getEdit_times()+1);
+                document.setLast_edit_time(now);
                 documentRepository.save(document);
                 FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html",Data);
                 return Result.success();

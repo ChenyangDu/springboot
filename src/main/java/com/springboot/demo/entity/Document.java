@@ -23,6 +23,7 @@ public class Document {
     private boolean is_deleted;
     private boolean is_editting;
     private String name;
+    private int edit_times;
 
     public boolean isIs_deleted() {
         return is_deleted;
