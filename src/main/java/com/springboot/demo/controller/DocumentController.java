@@ -37,7 +37,9 @@ public class DocumentController {
         }
     }
     @GetMapping("/document/create")
-    public Result create(@RequestParam("user_id") Integer user_id,@RequestParam("group_id") Integer group_id){
+    public Result create(@RequestParam("user_id") Integer user_id,
+                         @RequestParam("group_id") Integer group_id,
+                         @RequestParam("type") Integer type){
 
         if(user_id == null){
             return Result.error(400,"用户不存在");
@@ -56,7 +58,7 @@ public class DocumentController {
         Date now = new Date(System.currentTimeMillis());
         System.out.println(now);
         Document document = new Document(0,user_id,group_id,now,
-                now,false,true,"newName",0);
+                now,false,false,"newName",0);
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
         Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());
@@ -68,7 +70,7 @@ public class DocumentController {
         authority_user.setCan_delete(true);
 
         FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html","");
-        return Result.success();
+        return Result.success(document);
     }
 
     @GetMapping("/document/view")
