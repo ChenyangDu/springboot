@@ -179,6 +179,8 @@ public class DocumentController {
             if(!optionalDocument.get().isIs_deleted()){
                 return Result.error(400,"文件可恢复");
             }
+            optionalDocument.get().setIs_deleted(false);
+            documentRepository.save(optionalDocument.get());
             return Result.success();
         }
     }
