@@ -16,4 +16,5 @@ public class User {
     private String phone;
     private String wechat;
     private String qq;
+    private String email;
 }

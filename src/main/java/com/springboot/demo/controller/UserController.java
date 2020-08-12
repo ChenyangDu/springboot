@@ -56,23 +56,34 @@ public class UserController {
 
     @PostMapping("/register")
     public Result register(@RequestBody User user){
+        System.out.println(user.getWechat());
+        if(user.getWechat().equals("")){user.setWechat(null);}
+        if(user.getQq().equals("")){user.setQq(null);}
+        if(user.getEmail().equals("")){user.setEmail(null);}
+
         for(User matchUser : findAll()){
             if(matchUser.getPhone() != null && matchUser.getPhone().equals(user.getPhone())){
-                return Result.error(200,"手机号已被使用");
+                return Result.error(400,"手机号已被使用");
             }
             if(matchUser.getWechat() != null && matchUser.getWechat().equals(user.getWechat())){
-                return Result.error(200,"微信已被使用");
+                return Result.error(400,"微信已被使用");
             }
             if(matchUser.getQq() != null && matchUser.getQq().equals(user.getQq())){
-                return Result.error(200,"QQ已被使用");
+                return Result.error(400,"QQ已被使用");
+            }
+            if(matchUser.getEmail() != null && matchUser.getEmail().equals(user.getEmail())){
+                return Result.error(400,"邮箱已被使用");
             }
         }
+        user.setId((int) (System.currentTimeMillis()%2000000011));
+        System.out.println(user.toString());
         userRepository.save(user);
         return Result.success();
     }
 
     @GetMapping("/user/info")
     public Result userInfo(@RequestParam("id") int id){
+        System.out.println("userInfo"+id);
         Optional<User> optionalUser = userRepository.findById(id);
         if(optionalUser.isPresent()){
             return Result.success(optionalUser.get());
