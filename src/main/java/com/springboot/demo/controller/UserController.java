@@ -123,12 +123,17 @@ public class UserController {
 
     @GetMapping("/user/favorite")
     public Result userFavorite(@RequestParam("id") int id){
-        List<Favorite> result = new ArrayList<>();
+        List<Document> result = new ArrayList<>();
         for(Favorite favorite :favoriteRepository.findAll()){
             if (favorite.getFavorityKey().getUser_id() == id) {
-                result.add(favorite);
+                int doc_id = favorite.getFavorityKey().getDocument_id();
+                Optional<Document> optional = documentRepository.findById(doc_id);
+                if(optional.isPresent()){
+                    result.add(optional.get());
+                }
             }
         }
+        System.out.println(result);
         return Result.success(result);
     }
 
@@ -144,6 +149,7 @@ public class UserController {
                     result.add(optionalDocument.get());
                 }
             }
+            System.out.println(result);
             return Result.success(result);
         }else{
             return Result.error(400,"用户不存在/没有访问记录");
