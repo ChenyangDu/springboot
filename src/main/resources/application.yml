@@ -8,4 +8,3 @@ spring:
     password: root
     url: jdbc:mysql://39.101.200.9:3306/spike?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     driver-class-name: com.mysql.jdbc.Driver
-    //规避ConnectionIsClosedException（即删除.cj）

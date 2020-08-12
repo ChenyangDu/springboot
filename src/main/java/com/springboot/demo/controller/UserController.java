@@ -38,8 +38,8 @@ public class UserController {
     @PostMapping("/login")
     public Result login(@RequestBody User user){
         ExampleMatcher matcher = ExampleMatcher.matching()
-                .withMatcher("phone", match -> match.contains())//模糊查询
-                .withMatcher("password", match -> match.contains())
+                .withMatcher("phone", ExampleMatcher.GenericPropertyMatcher::exact)//模糊查询
+                .withMatcher("password", ExampleMatcher.GenericPropertyMatcher::exact)
                 .withIgnorePaths("id");
         Example <User> example = Example.of(user,matcher);
         List<User> matchUsers = userRepository.findAll(example);
