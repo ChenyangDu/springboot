@@ -1,11 +1,14 @@
 package com.springboot.demo.controller;
 
+import com.springboot.demo.entity.Authority_user;
+import com.springboot.demo.entity.Authority_userKey;
 import com.springboot.demo.entity.Document;
 import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.UserRepository;
 import com.springboot.demo.tool.FileTool;
 import com.springboot.demo.tool.Global;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +59,13 @@ public class DocumentController {
                 now,false,false,"newName");
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
+        Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());
+        Authority_user authority_user=new Authority_user();
+        authority_user.setAuthority_userKey(authority_userKey);
+        authority_user.setCan_read(true);
+        authority_user.setCan_edit(true);
+        authority_user.setCan_comment(true);
+        authority_user.setCan_delete(true);
 
         FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html","");
         return Result.success();
@@ -81,4 +91,45 @@ public class DocumentController {
             return Result.error(400,"文章不存在");
         }
     }
+
+    @GetMapping("/document/edit/start")
+    public Result edit_start(@RequestParam("doc_id") Integer id){
+        Optional<Document> optionalDocument = documentRepository.findById(id);
+        if(!optionalDocument.isPresent()){
+            return Result.error(400,"文章不存在");
+        }
+        else{
+            if(optionalDocument.get().isIs_editting()){
+                return Result.error(401,"文章正在被编辑");
+            }
+            else{
+                optionalDocument.get().setIs_editting(true);
+                documentRepository.save(optionalDocument.get());
+                return Result.success();
+            }
+        }
+    }
+
+    @PostMapping("/document/edit/end")
+    public Result edit_end(@RequestParam("doc_id") Integer id, @RequestBody String Data){
+        Optional<Document> optionalDocument = documentRepository.findById(id);
+        if(!optionalDocument.isPresent()){
+            return Result.error(400,"文章不存在");
+        }
+        else{
+            Document document=optionalDocument.get();
+            if (!document.isIs_editting()){
+                return Result.error(400,"文章上传不成功");
+            }
+            else {
+                document.setIs_editting(false);
+                documentRepository.save(document);
+                FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html",Data);
+                return Result.success();
+            }
+
+        }
+
+    }
+
 }
