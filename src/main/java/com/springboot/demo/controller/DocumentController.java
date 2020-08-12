@@ -10,10 +10,13 @@ import com.springboot.demo.tool.FileTool;
 import com.springboot.demo.tool.Global;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -135,6 +138,49 @@ public class DocumentController {
 
         }
 
+    }
+
+    @GetMapping("/document/delete")
+    public Result delete(@RequestParam("doc_id") Integer doc_id,@RequestParam("user_id") Integer user_id){
+        Optional<Document> optionalDocument = documentRepository.findById(doc_id);
+        Document document=optionalDocument.get();
+        if(!document.getCreator_id().equals(user_id)){
+            return Result.error(400,"用户不具备删除权限");
+        }
+        document.setIs_deleted(true);
+        documentRepository.save(document);
+        return Result.success();
+    }
+
+    @GetMapping("/document/recycle")
+    public Result recycle(@RequestParam("user_id") Integer user_id){
+        Document tmpDocu=new Document();
+        tmpDocu.setIs_deleted(true);
+        tmpDocu.setCreator_id(user_id);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("creator_id", ExampleMatcher.GenericPropertyMatcher::exact)
+                .withMatcher("is_deleted", ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("id");
+        Example<Document> example = Example.of(tmpDocu,matcher);
+        List<Document> myDocus=documentRepository.findAll(example);
+        if(myDocus==null){
+            return Result.error(400,"回收站为空");
+        }
+        return Result.success(myDocus);
+    }
+
+    @GetMapping("/document/recover")
+    public Result recover(@RequestParam("doc_id") Integer id){
+        Optional<Document> optionalDocument = documentRepository.findById(id);
+        if(!optionalDocument.isPresent()){
+            return Result.error(400,"文章不存在");
+        }
+        else{
+            if(!optionalDocument.get().isIs_deleted()){
+                return Result.error(400,"文件可恢复");
+            }
+            return Result.success();
+        }
     }
 
 }
