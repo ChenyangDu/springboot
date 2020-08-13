@@ -4,6 +4,7 @@ import com.springboot.demo.entity.Authority_user;
 import com.springboot.demo.entity.Authority_userKey;
 import com.springboot.demo.entity.Document;
 import com.springboot.demo.entity.User;
+import com.springboot.demo.repository.AuthorityRepository;
 import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.UserRepository;
 import com.springboot.demo.tool.FileTool;
@@ -28,6 +29,9 @@ public class DocumentController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
     public static void main(String[] args) {
         String ROOTPTATH = "E:\\Projects\\small_software";
@@ -72,6 +76,7 @@ public class DocumentController {
         authority_user.setCan_comment(true);
         authority_user.setCan_delete(true);
 
+        authorityRepository.save(authority_user);
         FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html","");
         return Result.success(document);
     }

@@ -35,9 +35,9 @@ public class CommentController {
         //消息相关
         Message message = new Message();
         message.setId((int) (System.currentTimeMillis()%2000000011));
-        Optional<Document> optional = documentRepository.findById(comment.getComment_id());
+        Optional<Document> optional = documentRepository.findById(comment.getDocument_id());
         if(!optional.isPresent()){
-            return Result.error(400,comment.getComment_id()+"文章没有创建者");
+            return Result.error(400,comment.getDocument_id()+"文章没有创建者");
         }
         message.setReceiver_id(optional.get().getCreator_id());
         message.setSender_id(comment.getUser_id());
