@@ -1,6 +1,6 @@
 package com.springboot.demo.controller;
 
-import com.springboot.demo.entity.User;
+import com.springboot.demo.entity.Message;
 import com.springboot.demo.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -21,9 +21,10 @@ public class MessageController {
                 .withMatcher("receive_id",ExampleMatcher.GenericPropertyMatcher::exact)
                 .withIgnorePaths("id").withIgnorePaths("sender_id").withIgnorePaths("docu_id")
                 .withIgnorePaths("group_id").withIgnorePaths("have_read").withIgnorePaths("message_type");
-        User user = new User();
-        user.setId(user_id);
-        Example example = Example.of(user,matcher);
+
+        Message message = new Message();
+        message.setReceiver_id(user_id);
+        Example example = Example.of(message,matcher);
         return Result.success(messageRepository.findAll(example));
     }
 }
