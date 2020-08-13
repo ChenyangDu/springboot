@@ -1,10 +1,7 @@
 package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.*;
-import com.springboot.demo.repository.DocumentRepository;
-import com.springboot.demo.repository.GroupRepository;
-import com.springboot.demo.repository.UserRepository;
-import com.springboot.demo.repository.User_groupRespository;
+import com.springboot.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -13,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.springboot.demo.entity.MessageType.*;
 
 @CrossOrigin
 @RestController
@@ -25,6 +24,8 @@ public class GroupController {
     private DocumentRepository documentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @PostMapping("/group/create")
     public Result create(@RequestBody Group group){
@@ -69,4 +70,85 @@ public class GroupController {
         list = documentRepository.findAll(example);
         return Result.success(list);
     }
+
+    @PostMapping("/group/invite")
+    public Result invite(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                user_id,optionalGroup.get().getCreator_id(),null,group_id, INVITE.ordinal(),false);
+        messageRepository.save(message);
+        return Result.success();
+    }
+
+    @PostMapping("/group/apply")
+    public Result apply(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                optionalGroup.get().getCreator_id(),user_id,null,group_id, APPLY.ordinal(),false);
+        messageRepository.save(message);
+        return Result.success();
+    }
+
+    @PostMapping("group/reply/invite")
+    public Result replyinvite(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id,@RequestParam("yesno") boolean yesno){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        if(yesno){
+            Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                    optionalGroup.get().getCreator_id(),user_id,null,group_id, AGREE_INVITE.ordinal(),false);
+            messageRepository.save(message);
+            User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
+            User_group_relation relation=new User_group_relation(relationKey);
+            user_groupRespository.save(relation);
+        }
+        else{
+            Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                    optionalGroup.get().getCreator_id(),user_id,null,group_id, REJECT_INVITE.ordinal(),false);
+            messageRepository.save(message);
+        }
+        return Result.success();
+    }
+
+    @PostMapping("group/reply/apply")
+    public Result replyapply(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id,@RequestParam("yesno") boolean yesno){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        if(yesno){
+            Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                    user_id,optionalGroup.get().getCreator_id(),null,group_id, AGREE_APPLY.ordinal(),false);
+            messageRepository.save(message);
+            User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
+            User_group_relation relation=new User_group_relation(relationKey);
+            user_groupRespository.save(relation);
+        }
+        else{
+            Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                    user_id,optionalGroup.get().getCreator_id(),null,group_id, REJECT_APPLY.ordinal(),false);
+            messageRepository.save(message);
+        }
+        return Result.success();
+    }
+
+    @PostMapping("/group/kickass")
+    public Result kickass(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                user_id,optionalGroup.get().getCreator_id(),null,group_id, KICK.ordinal(),false);
+        messageRepository.save(message);
+        User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
+        User_group_relation relation=new User_group_relation(relationKey);
+        user_groupRespository.delete(relation);
+        return Result.success();
+    }
+
+    @PostMapping("/group/drop")
+    public Result drop(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                optionalGroup.get().getCreator_id(),user_id,null,group_id, DROP.ordinal(),false);
+        messageRepository.save(message);
+        User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
+        User_group_relation relation=new User_group_relation(relationKey);
+        user_groupRespository.delete(relation);
+        return Result.success();
+    }
+
 }
