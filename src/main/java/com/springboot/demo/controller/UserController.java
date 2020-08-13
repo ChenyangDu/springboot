@@ -102,13 +102,13 @@ public class UserController {
         if(optionalUser.isPresent()){
             Document tmpDocu=new Document();
             tmpDocu.setCreator_id(id);
+            tmpDocu.setIs_deleted(false);
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("creator_id", ExampleMatcher.GenericPropertyMatcher::exact)
                     .withIgnorePaths("id")
                     .withIgnorePaths("group_id")
                     .withIgnorePaths("create_time")
                     .withIgnorePaths("last_edit_time")
-                    .withIgnorePaths("is_deleted")
                     .withIgnorePaths("is_editting")
                     .withIgnorePaths("name");
             Example <Document> example = Example.of(tmpDocu,matcher);
@@ -126,7 +126,7 @@ public class UserController {
             if (favorite.getFavorityKey().getUser_id() == id) {
                 int doc_id = favorite.getFavorityKey().getDocument_id();
                 Optional<Document> optional = documentRepository.findById(doc_id);
-                if(optional.isPresent()){
+                if(optional.isPresent() && optional.get().isIs_deleted() == false){
                     result.add(optional.get());
                 }
             }
@@ -143,7 +143,7 @@ public class UserController {
             List<Document> result = new ArrayList<>();
             for(String document_id : optionalRecent_read.get().getDocument_list().split(",")){
                 Optional<Document>optionalDocument = documentRepository.findById(Integer.parseInt(document_id));
-                if(optionalDocument.isPresent()){
+                if(optionalDocument.isPresent() && optionalDocument.get().isIs_deleted() == false){
                     result.add(optionalDocument.get());
                 }
             }

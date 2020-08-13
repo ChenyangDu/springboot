@@ -61,9 +61,10 @@ public class GroupController {
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("group_id",ExampleMatcher.GenericPropertyMatcher::exact)
                 .withIgnorePaths("id").withIgnorePaths("creator_id").withIgnorePaths("create_time")
-                .withIgnorePaths("last_edit_time").withIgnorePaths("is_deleted").withIgnorePaths("is_editting")
+                .withIgnorePaths("last_edit_time").withIgnorePaths("is_editting")
                 .withIgnorePaths("name").withIgnorePaths("edit_times").withIgnoreNullValues();
         Document document = new Document();
+        document.setIs_deleted(false);
         document.setGroup_id(group_id);
         System.out.println(document);
         Example example = Example.of(document,matcher);
