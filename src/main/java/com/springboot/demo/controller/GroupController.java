@@ -151,4 +151,23 @@ public class GroupController {
         return Result.success();
     }
 
+    @PostMapping("/group/dismiss")
+    public Result dismiss(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
+        Optional<Group> optionalGroup = groupRepository.findById(group_id);
+        Group aimgroup=optionalGroup.get();
+        if(!aimgroup.getCreator_id().equals(user_id)){
+            return Result.error(400,"用户无解散权限");
+        }
+        List<User_group_relation> relations=user_groupRespository.findAll();
+        for(User_group_relation relation:relations){
+            if(relation.getUser_group_relationKey().getGroup_id().equals(group_id)){
+                user_groupRespository.delete(relation);
+                Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                        relation.getUser_group_relationKey().getUser_id(),user_id,null,group_id, DISMISS_INFORM.ordinal(),false);
+                messageRepository.save(message);
+            }
+        }
+        return Result.success();
+    }
+
 }
