@@ -1,13 +1,7 @@
 package com.springboot.demo.controller;
 
-import com.springboot.demo.entity.Document;
-import com.springboot.demo.entity.Favorite;
-import com.springboot.demo.entity.Recent_read;
-import com.springboot.demo.entity.User;
-import com.springboot.demo.repository.DocumentRepository;
-import com.springboot.demo.repository.FavoriteRepository;
-import com.springboot.demo.repository.Recent_readRepository;
-import com.springboot.demo.repository.UserRepository;
+import com.springboot.demo.entity.*;
+import com.springboot.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -29,6 +23,10 @@ public class UserController {
     private FavoriteRepository favoriteRepository;
     @Autowired
     private Recent_readRepository recent_readRepository;
+    @Autowired
+    private User_groupRespository user_groupRespository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @GetMapping("/users")
     public List<User> findAll(){
@@ -153,6 +151,31 @@ public class UserController {
             return Result.success(result);
         }else{
             return Result.error(400,"用户不存在/没有访问记录");
+        }
+    }
+    
+    @GetMapping("/user/group")
+    public Result userGroup( @RequestParam("id") Integer id){
+        List<Group> list = new ArrayList<>();
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("creator_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("id").withIgnorePaths("name");
+        User_group_relation user_group = new User_group_relation();
+        user_group.setUser_group_relationKey(new User_group_relationKey(id,null));
+        Example example = Example.of(user_group,matcher);
+        for(Object object : user_groupRespository.findAll(example)){
+            User_group_relation user_group_relation = (User_group_relation) object;
+            int group_id = user_group_relation.getUser_group_relationKey().getGroup_id();
+            Optional<Group>optional = groupRepository.findById(group_id);
+            if(optional.isPresent()){
+                list.add(optional.get());
+            }
+        }
+
+        if(list.size() > 0){
+            return Result.success(list);
+        }else{
+            return Result.error(400,"用户不存在或未参加团队");
         }
     }
 }
