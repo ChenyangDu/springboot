@@ -25,9 +25,6 @@ public class CommentController {
     @Autowired
     private DocumentRepository documentRepository;
 
-    public static void main(String[] args) {
-        System.out.println(MessageType.REJECT_INVITE.ordinal());
-    }
     @PostMapping("/comment/create")
     public Result create(@RequestBody Comment comment){
         comment.setComment_id((int) (System.currentTimeMillis()%2000000011));
@@ -43,10 +40,12 @@ public class CommentController {
             return Result.error(400,comment.getComment_id()+"文章没有创建者");
         }
         message.setReceiver_id(optional.get().getCreator_id());
+        message.setSender_id(comment.getUser_id());
         message.setDocu_id(comment.getDocument_id());
         message.setGroup_id(null);
         message.setHave_read(false);
         message.setMessage_type(MessageType.COMMENT.ordinal());
+        messageRepository.save(message);
 
         return Result.success(comment);
     }
