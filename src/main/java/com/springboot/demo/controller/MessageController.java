@@ -7,6 +7,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @CrossOrigin
 @RequestMapping("/message")
 @RestController
@@ -26,5 +28,14 @@ public class MessageController {
         message.setReceiver_id(user_id);
         Example example = Example.of(message,matcher);
         return Result.success(messageRepository.findAll(example));
+    }
+
+    @PostMapping("/message/confirm")
+    private Result confirm(@RequestParam("msg_id") Integer id){
+        Optional<Message> optionalMessage=messageRepository.findById(id);
+        Message tmpMsg=optionalMessage.get();
+        tmpMsg.setHave_read(true);
+        messageRepository.save(tmpMsg);
+        return Result.success();
     }
 }
