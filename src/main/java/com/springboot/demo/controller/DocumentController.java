@@ -1,11 +1,9 @@
 package com.springboot.demo.controller;
 
-import com.springboot.demo.entity.Authority_user;
-import com.springboot.demo.entity.Authority_userKey;
-import com.springboot.demo.entity.Document;
-import com.springboot.demo.entity.User;
+import com.springboot.demo.entity.*;
 import com.springboot.demo.repository.AuthorityRepository;
 import com.springboot.demo.repository.DocumentRepository;
+import com.springboot.demo.repository.FavoriteRepository;
 import com.springboot.demo.repository.UserRepository;
 import com.springboot.demo.tool.FileTool;
 import com.springboot.demo.tool.Global;
@@ -33,9 +31,13 @@ public class DocumentController {
     @Autowired
     private AuthorityRepository authorityRepository;
 
+    @Autowired
+    private FavoriteRepository favoriteRepository;
+
     @GetMapping("/document/create")
     public Result create(@RequestParam("user_id") Integer user_id,
                          @RequestParam("group_id") Integer group_id,
+                         @RequestParam("name") String name,
                          @RequestParam("type") Integer type){
 
         if(user_id == null){
@@ -55,7 +57,7 @@ public class DocumentController {
         Date now = new Date(System.currentTimeMillis());
         System.out.println(now);
         Document document = new Document(0,user_id,group_id,now,
-                now,false,false,"newName",0,null);
+                now,false,false,name,0,null);
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
         Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());
@@ -82,8 +84,21 @@ public class DocumentController {
         }
     }
 
+    @GetMapping("/document/rename")
+    public Result rename(@RequestParam("doc_id") Integer id,@RequestParam("name") String name){
+        Optional<Document> optionalDocument = documentRepository.findById(id);
+        Document tmpDoc=optionalDocument.get();
+        if(tmpDoc.isIs_editting()){
+            return Result.error(400,"文章标题修改失败");
+        }
+        tmpDoc.setName(name);
+        documentRepository.save(tmpDoc);
+        return Result.success();
+
+    }
+
     @GetMapping("/document/info")
-    public Result info(@RequestParam("doc_id") Integer id){
+    public Result info(@RequestParam("doc_id") Integer id,@RequestParam("user_id") Integer user_id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
         if(optionalDocument.isPresent()){
             return Result.success(fuck(optionalDocument.get()));
@@ -178,6 +193,29 @@ public class DocumentController {
             documentRepository.save(optionalDocument.get());
             return Result.success();
         }
+    }
+
+    @GetMapping("/document/remove")
+    public Result remove(@RequestParam("doc_id") Integer id,@RequestParam("user_id") Integer user_id){
+        Optional<Document> optionalDocument = documentRepository.findById(id);
+        Document tmpDoc=optionalDocument.get();
+        if(!tmpDoc.getCreator_id().equals(user_id)){
+            return Result.error(400,"用户不具备删除权限");
+        }
+        documentRepository.delete(tmpDoc);
+        return Result.success();
+    }
+
+    @GetMapping("/document/favoriteinfo")
+    public Result favoriteinfo(@RequestParam("doc_id") Integer id,@RequestParam("user_id") Integer user_id){
+        FavorityKey favorityKey=new FavorityKey();
+        favorityKey.setDocument_id(id);
+        favorityKey.setUser_id(user_id);
+        Optional<Favorite> optionalFavorite=favoriteRepository.findById(favorityKey);
+        if(!optionalFavorite.isPresent()){
+            return Result.success(false);
+        }
+        return Result.success(true);
     }
 
     public Document fuck(Document document){
