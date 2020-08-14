@@ -1,18 +1,17 @@
 package com.springboot.demo.controller;
 
-import com.springboot.demo.entity.Comment;
-import com.springboot.demo.entity.Document;
-import com.springboot.demo.entity.Message;
-import com.springboot.demo.entity.MessageType;
+import com.springboot.demo.entity.*;
 import com.springboot.demo.repository.CommentRepository;
 import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.MessageRepository;
+import com.springboot.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -24,6 +23,8 @@ public class CommentController {
     private MessageRepository messageRepository;
     @Autowired
     private DocumentRepository documentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/comment/create")
     public Result create(@RequestBody Comment comment){
@@ -58,6 +59,18 @@ public class CommentController {
                 .withMatcher("doc_id",ExampleMatcher.GenericPropertyMatcher::exact)
                 .withIgnorePaths("comment_id");
         Example<Comment>example = Example.of(comment,matcher);
-        return Result.success(commentRepository.findAll(example));
+        List<Comment> list = commentRepository.findAll(example);
+        for(Comment comment1 : list){
+            fuck(comment1);
+        }
+        return Result.success(list);
+    }
+
+    public Comment fuck(Comment comment){
+        User user = userRepository.findById(comment.getUser_id()).orElse(null);
+        if(user != null){
+            comment.setUsername(user.getName());
+        }
+        return comment;
     }
 }

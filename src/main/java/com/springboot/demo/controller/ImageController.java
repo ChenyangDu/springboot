@@ -30,4 +30,13 @@ public class ImageController {
         inputStream.read(bytes, 0, inputStream.available());
         return bytes;
     }
+    @RequestMapping(value = "/system",produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseBody
+    public byte[] getSystemImage(@RequestParam("id")String id) throws IOException {
+        File file = new File(Global.SYSTEM_PATH+id+".jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes, 0, inputStream.available());
+        return bytes;
+    }
 }

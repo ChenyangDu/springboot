@@ -33,16 +33,6 @@ public class DocumentController {
     @Autowired
     private AuthorityRepository authorityRepository;
 
-    public static void main(String[] args) {
-        String ROOTPTATH = "E:\\Projects\\small_software";
-        try {
-            String str = FileTool.readFile(ROOTPTATH + "\\1.txt");
-            System.out.println(str);
-            FileTool.writeFile(ROOTPTATH+"\\2.html",str);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     @GetMapping("/document/create")
     public Result create(@RequestParam("user_id") Integer user_id,
                          @RequestParam("group_id") Integer group_id,
@@ -65,7 +55,7 @@ public class DocumentController {
         Date now = new Date(System.currentTimeMillis());
         System.out.println(now);
         Document document = new Document(0,user_id,group_id,now,
-                now,false,false,"newName",0);
+                now,false,false,"newName",0,null);
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
         Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());
@@ -96,7 +86,7 @@ public class DocumentController {
     public Result info(@RequestParam("doc_id") Integer id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
         if(optionalDocument.isPresent()){
-            return Result.success(optionalDocument.get());
+            return Result.success(fuck(optionalDocument.get()));
         }else{
             return Result.error(400,"文章不存在");
         }
@@ -188,6 +178,14 @@ public class DocumentController {
             documentRepository.save(optionalDocument.get());
             return Result.success();
         }
+    }
+
+    public Document fuck(Document document){
+        User user = userRepository.findById(document.getCreator_id()).orElse(null);
+        if(user != null){
+            document.setUsername(user.getName());
+        }
+        return document;
     }
 
 }

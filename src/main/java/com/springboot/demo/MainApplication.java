@@ -5,6 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 public class MainApplication {
@@ -16,13 +19,12 @@ public class MainApplication {
 
     private static void init(){
         System.out.println("hi");
-        File file =  new File(Global.DOCUMENT_PATH);
-        if(!file.exists()){
-            file.mkdirs();
-        }
-        file = new File(Global.AVATAR_PATH);
-        if(!file.exists()){
-            file.mkdirs();
+        List<String> list = Arrays.asList( Global.DOCUMENT_PATH,Global.AVATAR_PATH,Global.SYSTEM_PATH);
+        for(String path : list){
+            File file =  new File(path);
+            if(!file.exists()){
+                file.mkdirs();
+            }
         }
     }
 

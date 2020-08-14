@@ -1,6 +1,11 @@
 package com.springboot.demo.controller;
 
+import com.springboot.demo.entity.Document;
+import com.springboot.demo.entity.DocumentForVue;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class Result<T> {

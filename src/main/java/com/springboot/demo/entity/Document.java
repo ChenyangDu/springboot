@@ -1,12 +1,15 @@
 package com.springboot.demo.entity;
 
+import com.springboot.demo.repository.DocumentRepository;
+import com.springboot.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Date;
 
 @Entity
@@ -24,6 +27,10 @@ public class Document {
     private boolean is_editting;
     private String name;
     private Integer edit_times;
+
+    @Transient
+    private String username;
+
 
     public boolean isIs_deleted() {
         return is_deleted;

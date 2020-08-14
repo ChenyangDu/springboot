@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Date;
 
 @Entity
@@ -15,4 +16,7 @@ public class Comment {
     private Integer document_id;
     private String content;
     private Date time;
+
+    @Transient
+    private String username;
 }

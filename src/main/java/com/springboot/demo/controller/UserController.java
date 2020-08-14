@@ -28,6 +28,18 @@ public class UserController {
     @Autowired
     private GroupRepository groupRepository;
 
+    public User getById(Integer id){
+        if(id == null){
+            return null;
+        }
+        System.out.println(userRepository);
+        Optional<User>optional = userRepository.findById(25);
+        if(optional.isPresent()){
+            return optional.get();
+        }
+        return null;
+    }
+
     @GetMapping("/users")
     public List<User> findAll(){
         return userRepository.findAll();
@@ -127,7 +139,7 @@ public class UserController {
                 int doc_id = favorite.getFavorityKey().getDocument_id();
                 Optional<Document> optional = documentRepository.findById(doc_id);
                 if(optional.isPresent() && optional.get().isIs_deleted() == false){
-                    result.add(optional.get());
+                    result.add(fuck(optional.get()));
                 }
             }
         }
@@ -144,7 +156,7 @@ public class UserController {
             for(String document_id : optionalRecent_read.get().getDocument_list().split(",")){
                 Optional<Document>optionalDocument = documentRepository.findById(Integer.parseInt(document_id));
                 if(optionalDocument.isPresent() && optionalDocument.get().isIs_deleted() == false){
-                    result.add(optionalDocument.get());
+                    result.add(fuck(optionalDocument.get()));
                 }
             }
             System.out.println(result);
@@ -177,5 +189,12 @@ public class UserController {
         }else{
             return Result.error(400,"用户不存在或未参加团队");
         }
+    }
+    public Document fuck(Document document){
+        User user = userRepository.findById(document.getCreator_id()).orElse(null);
+        if(user != null){
+            document.setUsername(user.getName());
+        }
+        return document;
     }
 }
