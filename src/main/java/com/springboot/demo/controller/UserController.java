@@ -125,6 +125,9 @@ public class UserController {
                     .withIgnorePaths("name");
             Example <Document> example = Example.of(tmpDocu,matcher);
             List<Document> myDocus=documentRepository.findAll(example);
+            for(Document document : myDocus){
+                fuck(document);
+            }
             return Result.success(myDocus);
         }else{
             return Result.error(400,"用户不存在");

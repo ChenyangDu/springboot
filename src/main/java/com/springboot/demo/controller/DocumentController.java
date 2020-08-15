@@ -173,6 +173,9 @@ public class DocumentController {
                 .withIgnorePaths("id");
         Example<Document> example = Example.of(tmpDocu,matcher);
         List<Document> myDocus=documentRepository.findAll(example);
+        for(Document document : myDocus){
+            fuck(document);
+        }
         if(myDocus==null){
             return Result.error(400,"回收站为空");
         }
