@@ -20,17 +20,27 @@ public class AuthorityController {
     @GetMapping("/authority")
     public Result authorith(@RequestParam("user_id") Integer user_id,
                             @RequestParam("doc_id") Integer doc_id){
+        Authority_user au = new Authority_user(new Authority_userKey(user_id,doc_id),false,false,false,false);
         Optional<Authority_user> optional = authorityRepository.findById(new Authority_userKey(0,doc_id));
+        boolean error = true;
         if(optional.isPresent()){
-            return Result.success(optional.get());
-        }else{
-            //0号用户代表所有用户
-            optional = authorityRepository.findById(new Authority_userKey(user_id,doc_id));
-            if(optional.isPresent()){
-                return Result.success(optional.get());
-            }
+            au = optional.get();
+            error = false;
+        }
+
+        //0号用户代表所有用户
+        optional = authorityRepository.findById(new Authority_userKey(user_id,doc_id));
+        if(optional.isPresent()){
+            error = false;
+            Authority_user authority_user = optional.get();
+            au.setCan_edit(au.isCan_edit() || authority_user.isCan_edit());
+            au.setCan_comment(au.isCan_comment() || authority_user.isCan_comment());
+            au.setCan_read(au.isCan_read()||authority_user.isCan_read());
+        }
+        if(error){
             return Result.error(400,"用户/文章不存在");
         }
+        return Result.success(au);
     }
 
     @GetMapping("/authority/share")//给所有人的权限

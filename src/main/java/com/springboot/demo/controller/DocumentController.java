@@ -230,6 +230,19 @@ public class DocumentController {
         return Result.success();
     }
 
+    @GetMapping("/document/favorite")
+    public Result favorite(@RequestParam("doc_id") int doc_id,
+                           @RequestParam("user_id") int user_id,
+                           @RequestParam("favorite")boolean is_favorite){
+
+        Favorite favorite = new Favorite(new FavorityKey(user_id,doc_id));
+        if(is_favorite){
+            favoriteRepository.save(favorite);
+        }else{
+            favoriteRepository.delete(favorite);
+        }
+        return Result.success();
+    }
     @GetMapping("/document/favoriteinfo")
     public Result favoriteinfo(@RequestParam("doc_id") Integer id,@RequestParam("user_id") Integer user_id){
         FavorityKey favorityKey=new FavorityKey();

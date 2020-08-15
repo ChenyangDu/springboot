@@ -38,7 +38,9 @@ public class SearchController {
         List<User> list = userRepository.findAll();
         List<User> result = new ArrayList<>();
         for(User user : list){
-            if(user.getEmail().equals(key) || user.getPhone().equals(key)){
+            if(user.getEmail()!= null && user.getEmail().equals(key)){
+                result.add(user);
+            }else if (user.getPhone()!=null && user.getPhone().equals(key)){
                 result.add(user);
             }
         }

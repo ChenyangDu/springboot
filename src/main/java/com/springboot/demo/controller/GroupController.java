@@ -39,6 +39,11 @@ public class GroupController {
         user_groupRespository.save(user_group_relation);
         return Result.success(group);
     }
+    @GetMapping("/group/info")
+    public Result info(@RequestParam("group_id")int group_id){
+        Group group = groupRepository.findById(group_id).orElse(null);
+        return Result.success(group);
+    }
 
     @GetMapping("/group/member")
     public Result member(@RequestParam ("group_id") int group_id){
