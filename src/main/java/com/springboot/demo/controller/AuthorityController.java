@@ -42,6 +42,7 @@ public class AuthorityController {
         authority_user.setCan_read(can_read);
         authority_user.setCan_comment(can_comment);
         authority_user.setCan_edit(can_edit);
+        authorityRepository.save(authority_user);
         return Result.success();
     }
 
@@ -56,6 +57,7 @@ public class AuthorityController {
         authority_user.setCan_read(can_read);
         authority_user.setCan_comment(can_comment);
         authority_user.setCan_edit(can_edit);
+        authorityRepository.save(authority_user);
         return Result.success();
     }
 }

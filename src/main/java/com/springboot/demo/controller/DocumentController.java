@@ -70,7 +70,6 @@ public class DocumentController {
     @GetMapping("/document/view")
     public Result view(@RequestParam("doc_id") Integer doc_id,@RequestParam("user_id") Integer user_id){
         String filePath = Global.DOCUMENT_PATH + doc_id.toString() + ".html";
-        Optional<Document> optionalDocument = documentRepository.findById(doc_id);
         String document_list = "";
         if(user_id == null)return Result.error(400,"请登录");
         Recent_read recent_read = recent_readRepository.findById(user_id).orElse(null);
