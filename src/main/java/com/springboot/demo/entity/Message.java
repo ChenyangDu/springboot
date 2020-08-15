@@ -29,4 +29,15 @@ public class Message {
     @Transient
     private String receiver_name,sender_name,docu_name,group_name;
 
+    public Message (Integer id,Integer receiver_id,Integer sender_id,Integer docu_id,
+                    Integer group_id, Integer message_type,boolean have_read){
+        this.id = id;
+        this.receiver_id = receiver_id;
+        this.sender_id = sender_id;
+        this.docu_id = docu_id;
+        this.group_id = group_id;
+        this.message_type = message_type;
+        this.have_read = have_read;
+    }
+
 }

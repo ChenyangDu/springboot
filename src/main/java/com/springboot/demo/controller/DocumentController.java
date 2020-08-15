@@ -1,10 +1,7 @@
 package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.*;
-import com.springboot.demo.repository.AuthorityRepository;
-import com.springboot.demo.repository.DocumentRepository;
-import com.springboot.demo.repository.FavoriteRepository;
-import com.springboot.demo.repository.UserRepository;
+import com.springboot.demo.repository.*;
 import com.springboot.demo.tool.FileTool;
 import com.springboot.demo.tool.Global;
 import lombok.Data;
@@ -14,9 +11,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -24,15 +19,14 @@ public class DocumentController {
 
     @Autowired
     private DocumentRepository documentRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AuthorityRepository authorityRepository;
-
     @Autowired
     private FavoriteRepository favoriteRepository;
+    @Autowired
+    private Recent_readRepository recent_readRepository;
 
     @GetMapping("/document/create")
     public Result create(@RequestParam("user_id") Integer user_id,
@@ -98,9 +92,34 @@ public class DocumentController {
     }
 
     @GetMapping("/document/info")
-    public Result info(@RequestParam("doc_id") Integer id,@RequestParam("user_id") Integer user_id){
-        Optional<Document> optionalDocument = documentRepository.findById(id);
+    public Result info(@RequestParam("doc_id") Integer doc_id,@RequestParam("user_id") Integer user_id){
+        Optional<Document> optionalDocument = documentRepository.findById(doc_id);
         if(optionalDocument.isPresent()){
+            String document_list = "";
+            if(user_id == null)return Result.error(400,"请登录");
+            Recent_read recent_read = recent_readRepository.findById(user_id).orElse(null);
+            if(recent_read != null){
+                document_list = recent_read.getDocument_list();
+                List<String> documents = new ArrayList<>(Arrays.asList(document_list.split(",")));
+                documents.add(0,doc_id.toString());
+                while(documents.size() > 10){
+                    documents.remove(10);
+                }
+                document_list = "";
+                for(int i = 0 ;i < documents.size();i++){
+                    document_list += documents.get(i);
+                    if(i != documents.size()-1){
+                        document_list += ",";
+                    }
+                }
+                recent_read.setDocument_list(document_list);
+            }else{
+                recent_read = new Recent_read();
+                recent_read.setUser_id(user_id);
+                recent_read.setDocument_list(doc_id.toString());
+            }
+
+            recent_readRepository.save(recent_read);
             return Result.success(fuck(optionalDocument.get()));
         }else{
             return Result.error(400,"文章不存在");
