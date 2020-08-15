@@ -68,11 +68,39 @@ public class DocumentController {
     }
 
     @GetMapping("/document/view")
-    public Result view(@RequestParam("doc_id") Integer id){
-        String filePath = Global.DOCUMENT_PATH + id.toString() + ".html";
+    public Result view(@RequestParam("doc_id") Integer doc_id,@RequestParam("user_id") Integer user_id){
+        String filePath = Global.DOCUMENT_PATH + doc_id.toString() + ".html";
+        Optional<Document> optionalDocument = documentRepository.findById(doc_id);
+        String document_list = "";
+        if(user_id == null)return Result.error(400,"请登录");
+        Recent_read recent_read = recent_readRepository.findById(user_id).orElse(null);
+        if(recent_read != null){
+            document_list = recent_read.getDocument_list();
+            List<String> documents = new ArrayList<>(Arrays.asList(document_list.split(",")));
+            documents.add(0,doc_id.toString());
+            while(documents.size() > 10){
+                documents.remove(10);
+            }
+            document_list = "";
+            for(int i = 0 ;i < documents.size();i++){
+                document_list += documents.get(i);
+                if(i != documents.size()-1){
+                    document_list += ",";
+                }
+            }
+            recent_read.setDocument_list(document_list);
+        }else{
+            recent_read = new Recent_read();
+            recent_read.setUser_id(user_id);
+            recent_read.setDocument_list(doc_id.toString());
+        }
+
+        recent_readRepository.save(recent_read);
+
         try{
             return Result.success(FileTool.readFile(filePath));
         } catch (IOException e) {
+            recent_readRepository.delete(recent_read);
             e.printStackTrace();
             return Result.error(400,"文章不存在");
         }
@@ -92,34 +120,9 @@ public class DocumentController {
     }
 
     @GetMapping("/document/info")
-    public Result info(@RequestParam("doc_id") Integer doc_id,@RequestParam("user_id") Integer user_id){
+    public Result info(@RequestParam("doc_id") Integer doc_id){
         Optional<Document> optionalDocument = documentRepository.findById(doc_id);
         if(optionalDocument.isPresent()){
-            String document_list = "";
-            if(user_id == null)return Result.error(400,"请登录");
-            Recent_read recent_read = recent_readRepository.findById(user_id).orElse(null);
-            if(recent_read != null){
-                document_list = recent_read.getDocument_list();
-                List<String> documents = new ArrayList<>(Arrays.asList(document_list.split(",")));
-                documents.add(0,doc_id.toString());
-                while(documents.size() > 10){
-                    documents.remove(10);
-                }
-                document_list = "";
-                for(int i = 0 ;i < documents.size();i++){
-                    document_list += documents.get(i);
-                    if(i != documents.size()-1){
-                        document_list += ",";
-                    }
-                }
-                recent_read.setDocument_list(document_list);
-            }else{
-                recent_read = new Recent_read();
-                recent_read.setUser_id(user_id);
-                recent_read.setDocument_list(doc_id.toString());
-            }
-
-            recent_readRepository.save(recent_read);
             return Result.success(fuck(optionalDocument.get()));
         }else{
             return Result.error(400,"文章不存在");
