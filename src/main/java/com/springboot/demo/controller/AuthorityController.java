@@ -2,6 +2,7 @@ package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.Authority_user;
 import com.springboot.demo.entity.Authority_userKey;
+import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.AuthorityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -17,27 +20,28 @@ public class AuthorityController {
     @Autowired
     private AuthorityRepository authorityRepository;
 
-    @GetMapping("/authority")
-    public Result authorith(@RequestParam("user_id") Integer user_id,
-                            @RequestParam("doc_id") Integer doc_id){
+    private Authority_user authorityOne (Integer user_id,Integer doc_id){
         Authority_user au = new Authority_user(new Authority_userKey(user_id,doc_id),false,false,false,false);
         Optional<Authority_user> optional = authorityRepository.findById(new Authority_userKey(0,doc_id));
-        boolean error = true;
         if(optional.isPresent()){
             au = optional.get();
-            error = false;
         }
 
         //0号用户代表所有用户
         optional = authorityRepository.findById(new Authority_userKey(user_id,doc_id));
         if(optional.isPresent()){
-            error = false;
             Authority_user authority_user = optional.get();
             au.setCan_edit(au.isCan_edit() || authority_user.isCan_edit());
             au.setCan_comment(au.isCan_comment() || authority_user.isCan_comment());
             au.setCan_read(au.isCan_read()||authority_user.isCan_read());
         }
-        return Result.success(au);
+        return au;
+    }
+
+    @GetMapping("/authority")
+    public Result authority(@RequestParam("user_id") Integer user_id,
+                            @RequestParam("doc_id") Integer doc_id){
+         return Result.success(authorityOne(user_id,doc_id));
     }
 
     @GetMapping("/authority/share")//给所有人的权限
@@ -66,5 +70,14 @@ public class AuthorityController {
         authority_user.setCan_edit(can_edit);
         authorityRepository.save(authority_user);
         return Result.success();
+    }
+
+    @GetMapping("/authorith/users")
+    public Result users(@RequestParam("doc_id")int doc_id, @RequestParam("users")User users[]){
+        List<Authority_user> list = new ArrayList<>();
+        for(User user : users){
+            list.add(authorityOne(user.getId(),doc_id));
+        }
+        return Result.success(list);
     }
 }
