@@ -62,7 +62,15 @@ public class DocumentController {
         authority_user.setCan_delete(true);
 
         authorityRepository.save(authority_user);
-        FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html","");
+        String content = "";//写入内容默认为空
+        if(type > 0){
+            try{
+                content = FileTool.readFile(Global.DOCUMENT_MODEL_PATH+type+".html");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        FileTool.writeFile(Global.DOCUMENT_PATH+document.getId()+".html",content);
         return Result.success(document);
     }
 

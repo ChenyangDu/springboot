@@ -5,6 +5,7 @@ import com.springboot.demo.entity.Authority_userKey;
 import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.AuthorityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,11 +73,20 @@ public class AuthorityController {
         return Result.success();
     }
 
-    @GetMapping("/authorith/users")
-    public Result users(@RequestParam("doc_id")int doc_id, @RequestParam("users")User users[]){
-        List<Authority_user> list = new ArrayList<>();
-        for(User user : users){
-            list.add(authorityOne(user.getId(),doc_id));
+    @GetMapping("/authority/users")
+    public Result users(@RequestParam("doc_id")int doc_id, @RequestParam("users")Integer users_id[]){
+        List<Integer> list = new ArrayList<Integer>();
+        for(Integer user_id : users_id){
+            Authority_user authority_user = authorityOne(user_id,doc_id);
+            if(authority_user.isCan_edit()){
+                list.add(3);
+            }else if(authority_user.isCan_comment()){
+                list.add(2);
+            }else if(authority_user.isCan_read()){
+                list.add(1);
+            }else {
+                list.add(0);
+            }
         }
         return Result.success(list);
     }
