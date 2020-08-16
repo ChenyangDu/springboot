@@ -25,11 +25,15 @@ public class ImageController {
     @RequestMapping(value = "/avatar/show",produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
     public byte[] getImage(@RequestParam("user_id")int user_id) throws IOException {
-        File file = new File(Global.AVATAR_PATH+user_id+".jpg");
-        FileInputStream inputStream = new FileInputStream(file);
-        byte[] bytes = new byte[inputStream.available()];
-        inputStream.read(bytes, 0, inputStream.available());
-        return bytes;
+        try{
+            File file = new File(Global.AVATAR_PATH+user_id+".jpg");
+            FileInputStream inputStream = new FileInputStream(file);
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes, 0, inputStream.available());
+            return bytes;
+        } catch (Exception e) {
+        }
+        return null;
     }
     // 文档里面的图片上传与下载
     @PostMapping("/docimg/upload")
