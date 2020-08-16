@@ -30,7 +30,8 @@ public class Document {
 
     @Transient
     private String username;
-
+    @Transient
+    private boolean star;
 
     public boolean isIs_deleted() {
         return is_deleted;

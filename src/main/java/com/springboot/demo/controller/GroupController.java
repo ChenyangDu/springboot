@@ -27,6 +27,8 @@ public class GroupController {
     private UserRepository userRepository;
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     @PostMapping("/group/create")
     public Result create(@RequestBody Group group){
@@ -191,5 +193,15 @@ public class GroupController {
         }
         return Result.success();
     }
-
+    public Document fuck(Document document){
+        User user = userRepository.findById(document.getCreator_id()).orElse(null);
+        if(user != null){
+            document.setUsername(user.getName());
+        }
+        return document;
+    }
+    public Document superFuck(Document document,int user_id){
+        document.setStar(favoriteRepository.findById(new FavorityKey(user_id,document.getId())).isPresent());
+        return fuck(document);
+    }
 }

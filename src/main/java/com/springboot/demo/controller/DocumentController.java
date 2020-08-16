@@ -50,7 +50,7 @@ public class DocumentController {
 
         Date now = Global.nowTime();
         Document document = new Document(0,user_id,group_id,now,
-                now,false,false,name,0,null);
+                now,false,false,name,0,null,false);
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
         Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());

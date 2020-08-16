@@ -126,7 +126,7 @@ public class UserController {
             Example <Document> example = Example.of(tmpDocu,matcher);
             List<Document> myDocus=documentRepository.findAll(example);
             for(Document document : myDocus){
-                fuck(document);
+                superFuck(document,id);
             }
             return Result.success(myDocus);
         }else{
@@ -142,7 +142,7 @@ public class UserController {
                 int doc_id = favorite.getFavorityKey().getDocument_id();
                 Optional<Document> optional = documentRepository.findById(doc_id);
                 if(optional.isPresent() && optional.get().isIs_deleted() == false){
-                    result.add(fuck(optional.get()));
+                    result.add(superFuck(optional.get(),id));
                 }
             }
         }
@@ -159,7 +159,7 @@ public class UserController {
             for(String document_id : optionalRecent_read.get().getDocument_list().split(",")){
                 Optional<Document>optionalDocument = documentRepository.findById(Integer.parseInt(document_id));
                 if(optionalDocument.isPresent() && optionalDocument.get().isIs_deleted() == false){
-                    result.add(fuck(optionalDocument.get()));
+                    result.add(superFuck(optionalDocument.get(),id));
                 }
             }
             System.out.println(result);
@@ -199,5 +199,9 @@ public class UserController {
             document.setUsername(user.getName());
         }
         return document;
+    }
+    public Document superFuck(Document document,int user_id){
+        document.setStar(favoriteRepository.findById(new FavorityKey(user_id,document.getId())).isPresent());
+        return fuck(document);
     }
 }
