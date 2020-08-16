@@ -48,8 +48,7 @@ public class DocumentController {
             group_id = null;
         }
 
-        Date now = new Date(System.currentTimeMillis());
-        System.out.println(now);
+        Date now = Global.nowTime();
         Document document = new Document(0,user_id,group_id,now,
                 now,false,false,name,0,null);
         document.setId((int) (System.currentTimeMillis()%2000000011));
@@ -226,6 +225,8 @@ public class DocumentController {
         if(!tmpDoc.getCreator_id().equals(user_id)){
             return Result.error(400,"用户不具备删除权限");
         }
+        String filePath = Global.DOCUMENT_PATH + id.toString() + ".html";
+        FileTool.deleteFile(filePath);
         documentRepository.delete(tmpDoc);
         return Result.success();
     }

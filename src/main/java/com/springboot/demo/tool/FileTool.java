@@ -59,4 +59,15 @@ public class FileTool {
             e.printStackTrace();
         }
     }
+
+    public static void deleteFile(String filePath){
+        try{
+            File file = new File(filePath);
+            if(file.exists()){
+                file.delete();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

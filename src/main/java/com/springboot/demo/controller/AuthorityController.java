@@ -37,9 +37,6 @@ public class AuthorityController {
             au.setCan_comment(au.isCan_comment() || authority_user.isCan_comment());
             au.setCan_read(au.isCan_read()||authority_user.isCan_read());
         }
-        if(error){
-            return Result.error(400,"用户/文章不存在");
-        }
         return Result.success(au);
     }
 

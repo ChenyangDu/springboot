@@ -5,6 +5,7 @@ import com.springboot.demo.repository.CommentRepository;
 import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.MessageRepository;
 import com.springboot.demo.repository.UserRepository;
+import com.springboot.demo.tool.Global;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -29,7 +30,7 @@ public class CommentController {
     @PostMapping("/comment/create")
     public Result create(@RequestBody Comment comment){
         comment.setComment_id((int) (System.currentTimeMillis()%2000000011));
-        comment.setTime(new Date());
+        comment.setTime(Global.nowTime());
         System.out.println(comment);
         commentRepository.save(comment);
 

@@ -2,6 +2,7 @@ package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.*;
 import com.springboot.demo.repository.*;
+import com.springboot.demo.tool.Global;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -81,7 +82,7 @@ public class GroupController {
     public Result invite(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
         Optional<Group> optionalGroup = groupRepository.findById(group_id);
         Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                user_id,optionalGroup.get().getCreator_id(),null,group_id, INVITE.ordinal(),false);
+                user_id,optionalGroup.get().getCreator_id(),null,group_id, INVITE.ordinal(),false, Global.nowTime());
         messageRepository.save(message);
         return Result.success();
     }
@@ -90,7 +91,7 @@ public class GroupController {
     public Result apply(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
         Optional<Group> optionalGroup = groupRepository.findById(group_id);
         Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                optionalGroup.get().getCreator_id(),user_id,null,group_id, APPLY.ordinal(),false);
+                optionalGroup.get().getCreator_id(),user_id,null,group_id, APPLY.ordinal(),false,Global.nowTime());
         messageRepository.save(message);
         return Result.success();
     }
@@ -100,7 +101,7 @@ public class GroupController {
         Optional<Group> optionalGroup = groupRepository.findById(group_id);
         if(yesno){
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                    optionalGroup.get().getCreator_id(),user_id,null,group_id, AGREE_INVITE.ordinal(),false);
+                    optionalGroup.get().getCreator_id(),user_id,null,group_id, AGREE_INVITE.ordinal(),false,Global.nowTime());
             messageRepository.save(message);
             User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
             User_group_relation relation=new User_group_relation(relationKey);
@@ -108,7 +109,7 @@ public class GroupController {
         }
         else{
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                    optionalGroup.get().getCreator_id(),user_id,null,group_id, REJECT_INVITE.ordinal(),false);
+                    optionalGroup.get().getCreator_id(),user_id,null,group_id, REJECT_INVITE.ordinal(),false,Global.nowTime());
             messageRepository.save(message);
         }
         return Result.success();
@@ -119,7 +120,7 @@ public class GroupController {
         Optional<Group> optionalGroup = groupRepository.findById(group_id);
         if(yesno){
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                    user_id,optionalGroup.get().getCreator_id(),null,group_id, AGREE_APPLY.ordinal(),false);
+                    user_id,optionalGroup.get().getCreator_id(),null,group_id, AGREE_APPLY.ordinal(),false,Global.nowTime());
             messageRepository.save(message);
             User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
             User_group_relation relation=new User_group_relation(relationKey);
@@ -127,7 +128,7 @@ public class GroupController {
         }
         else{
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                    user_id,optionalGroup.get().getCreator_id(),null,group_id, REJECT_APPLY.ordinal(),false);
+                    user_id,optionalGroup.get().getCreator_id(),null,group_id, REJECT_APPLY.ordinal(),false,Global.nowTime());
             messageRepository.save(message);
         }
         return Result.success();
@@ -137,7 +138,7 @@ public class GroupController {
     public Result kickass(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
         Optional<Group> optionalGroup = groupRepository.findById(group_id);
         Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                user_id,optionalGroup.get().getCreator_id(),null,group_id, KICK.ordinal(),false);
+                user_id,optionalGroup.get().getCreator_id(),null,group_id, KICK.ordinal(),false,Global.nowTime());
         messageRepository.save(message);
         User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
         User_group_relation relation=new User_group_relation(relationKey);
@@ -149,7 +150,7 @@ public class GroupController {
     public Result drop(@RequestParam("user_id") int user_id,@RequestParam("group_id") int group_id){
         Optional<Group> optionalGroup = groupRepository.findById(group_id);
         Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                optionalGroup.get().getCreator_id(),user_id,null,group_id, DROP.ordinal(),false);
+                optionalGroup.get().getCreator_id(),user_id,null,group_id, DROP.ordinal(),false,Global.nowTime());
         messageRepository.save(message);
         User_group_relationKey relationKey=new User_group_relationKey(user_id,group_id);
         User_group_relation relation=new User_group_relation(relationKey);
@@ -169,7 +170,7 @@ public class GroupController {
             if(relation.getUser_group_relationKey().getGroup_id().equals(group_id)){
                 user_groupRespository.delete(relation);
                 Message message=new Message((int) (System.currentTimeMillis()%2000000011),
-                        relation.getUser_group_relationKey().getUser_id(),user_id,null,group_id, DISMISS_INFORM.ordinal(),false);
+                        relation.getUser_group_relationKey().getUser_id(),user_id,null,group_id, DISMISS_INFORM.ordinal(),false,Global.nowTime());
                 messageRepository.save(message);
             }
         }
