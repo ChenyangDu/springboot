@@ -73,9 +73,13 @@ public class DocumentController {
         if(user_id == null)return Result.error(400,"请登录");
         Recent_read recent_read = recent_readRepository.findById(user_id).orElse(null);
         if(recent_read != null){
+            String aimDoc=doc_id.toString();
             document_list = recent_read.getDocument_list();
             List<String> documents = new ArrayList<>(Arrays.asList(document_list.split(",")));
-            documents.add(0,doc_id.toString());
+            if(documents.contains(aimDoc)){
+                documents.remove(aimDoc);
+            }
+            documents.add(0,aimDoc);
             while(documents.size() > 10){
                 documents.remove(10);
             }
