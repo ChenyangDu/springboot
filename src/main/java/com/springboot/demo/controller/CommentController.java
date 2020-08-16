@@ -47,6 +47,7 @@ public class CommentController {
         message.setGroup_id(null);
         message.setHave_read(false);
         message.setMessage_type(MessageType.COMMENT.ordinal());
+        message.setOperate(0);
         messageRepository.save(message);
 
         return Result.success(comment);
