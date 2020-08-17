@@ -72,6 +72,7 @@ public class DocumentController {
         authority_user_a.setCan_delete(false);
 
         authorityRepository.save(authority_user);
+        authorityRepository.save(authority_user_a);
         String content = "";//写入内容默认为空
         if(type > 0){
             try{
