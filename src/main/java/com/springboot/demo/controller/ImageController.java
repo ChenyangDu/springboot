@@ -64,4 +64,14 @@ public class ImageController {
         inputStream.read(bytes, 0, inputStream.available());
         return bytes;
     }
+    //模板图片
+    @RequestMapping(value = "/model",produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseBody
+    public byte[] getModelImage(@RequestParam("id")String id) throws IOException {
+        File file = new File(Global.DOCUMENT_MODEL_PATH+id+".jpg");
+        FileInputStream inputStream = new FileInputStream(file);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes, 0, inputStream.available());
+        return bytes;
+    }
 }

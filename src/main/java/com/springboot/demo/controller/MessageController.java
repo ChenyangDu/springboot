@@ -36,7 +36,8 @@ public class MessageController {
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("receive_id",ExampleMatcher.GenericPropertyMatcher::exact)
                 .withIgnorePaths("id").withIgnorePaths("sender_id").withIgnorePaths("docu_id")
-                .withIgnorePaths("group_id").withIgnorePaths("have_read").withIgnorePaths("message_type");
+                .withIgnorePaths("group_id").withIgnorePaths("have_read").withIgnorePaths("message_type")
+                .withIgnorePaths("time").withIgnorePaths("operate");
 
         Message message = new Message();
         message.setReceiver_id(user_id);
@@ -48,7 +49,7 @@ public class MessageController {
         return Result.success(list);
     }
 
-    @PostMapping("/message/confirm")
+    @PostMapping("/confirm")
     private Result confirm(@RequestParam("msg_id") Integer id){
         Optional<Message> optionalMessage=messageRepository.findById(id);
         Message tmpMsg=optionalMessage.get();
