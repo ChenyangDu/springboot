@@ -1,8 +1,10 @@
 package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.Document;
+import com.springboot.demo.entity.Group;
 import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.DocumentRepository;
+import com.springboot.demo.repository.GroupRepository;
 import com.springboot.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -20,6 +22,8 @@ public class SearchController {
     private DocumentRepository documentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @GetMapping("/document")
     public Result document(@RequestParam("key") String key){
@@ -42,6 +46,18 @@ public class SearchController {
                 result.add(user);
             }else if (user.getPhone()!=null && user.getPhone().equals(key)){
                 result.add(user);
+            }
+        }
+        return Result.success(result);
+    }
+
+    @GetMapping("/group")
+    public Result group(@RequestParam("key") String key){
+        List<Group> list = groupRepository.findAll();
+        List<Group> result = new ArrayList<>();
+        for(Group group : list){
+            if(group.getName() != null && group.getName().contains(key)){
+                result.add(group);
             }
         }
         return Result.success(result);
