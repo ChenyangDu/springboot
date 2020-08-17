@@ -29,6 +29,8 @@ public class GroupController {
     private MessageRepository messageRepository;
     @Autowired
     private FavoriteRepository favoriteRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @PostMapping("/group/create")
     public Result create(@RequestBody Group group){
@@ -77,6 +79,29 @@ public class GroupController {
         System.out.println(document);
         Example example = Example.of(document,matcher);
         list = documentRepository.findAll(example);
+        for(Document items:list){
+            Integer doc_id=items.getId();
+            Optional<Document> optionalDocument = documentRepository.findById(doc_id);
+            Document tmpDoc=optionalDocument.get();
+            //评论数
+            Comment comment = new Comment();
+            comment.setDocument_id(doc_id);
+            ExampleMatcher matcherb = ExampleMatcher.matching()
+                    .withMatcher("doc_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                    .withIgnorePaths("comment_id");
+            Example<Comment>exampleb = Example.of(comment,matcherb);
+            List<Comment> lista = commentRepository.findAll(example);
+            tmpDoc.setComments(lista.size());
+            //收藏数
+            ExampleMatcher matchera = ExampleMatcher.matching()
+                    .withMatcher("document_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                    .withIgnorePaths("user_id");
+            Favorite favorite=new Favorite();
+            favorite.setFavorityKey(new FavorityKey(null,doc_id));
+            Example examplea = Example.of(favorite,matchera);
+            List<Favorite> favoriteList=favoriteRepository.findAll(examplea);
+            tmpDoc.setStars(favoriteList.size());
+        }
         return Result.success(list);
     }
 

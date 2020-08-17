@@ -27,6 +27,8 @@ public class DocumentController {
     private FavoriteRepository favoriteRepository;
     @Autowired
     private Recent_readRepository recent_readRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @GetMapping("/document/create")
     public Result create(@RequestParam("user_id") Integer user_id,
@@ -50,7 +52,7 @@ public class DocumentController {
 
         Date now = Global.nowTime();
         Document document = new Document(0,user_id,group_id,now,
-                now,false,false,name,0,null,false);
+                now,false,false,name,0,0,null,false,0,0);
         document.setId((int) (System.currentTimeMillis()%2000000011));
         documentRepository.save(document);
         Authority_userKey authority_userKey=new Authority_userKey(user_id,document.getId());
@@ -60,6 +62,14 @@ public class DocumentController {
         authority_user.setCan_edit(true);
         authority_user.setCan_comment(true);
         authority_user.setCan_delete(true);
+
+        Authority_userKey authority_userKey_a=new Authority_userKey(0,document.getId());
+        Authority_user authority_user_a=new Authority_user();
+        authority_user_a.setAuthority_userKey(authority_userKey_a);
+        authority_user_a.setCan_read(true);
+        authority_user_a.setCan_edit(false);
+        authority_user_a.setCan_comment(false);
+        authority_user_a.setCan_delete(false);
 
         authorityRepository.save(authority_user);
         String content = "";//写入内容默认为空
@@ -76,6 +86,12 @@ public class DocumentController {
 
     @GetMapping("/document/view")
     public Result view(@RequestParam("doc_id") Integer doc_id,@RequestParam("user_id") Integer user_id){
+        Optional<Document> optionalDocument=documentRepository.findById(doc_id);
+        Document document=optionalDocument.get();
+        if(document.getViews()==null)
+            document.setViews(1);
+        else document.setViews(document.getViews()+1);
+        documentRepository.save(document);
         String filePath = Global.DOCUMENT_PATH + doc_id.toString() + ".html";
         String document_list = "";
         if(user_id == null)return Result.error(400,"请登录");
@@ -132,8 +148,28 @@ public class DocumentController {
     @GetMapping("/document/info")
     public Result info(@RequestParam("doc_id") Integer doc_id){
         Optional<Document> optionalDocument = documentRepository.findById(doc_id);
+        Document tmpDoc=optionalDocument.get();
+        //评论数
+        Comment comment = new Comment();
+        comment.setDocument_id(doc_id);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("doc_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("comment_id");
+        Example<Comment>example = Example.of(comment,matcher);
+        List<Comment> list = commentRepository.findAll(example);
+        tmpDoc.setComments(list.size());
+        //收藏数
+        ExampleMatcher matchera = ExampleMatcher.matching()
+                .withMatcher("document_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("user_id");
+        Favorite favorite=new Favorite();
+        favorite.setFavorityKey(new FavorityKey(null,doc_id));
+        Example examplea = Example.of(favorite,matchera);
+        List<Favorite> favoriteList=favoriteRepository.findAll(examplea);
+        tmpDoc.setStars(favoriteList.size());
+
         if(optionalDocument.isPresent()){
-            return Result.success(fuck(optionalDocument.get()));
+            return Result.success(fuck(tmpDoc));
         }else{
             return Result.error(400,"文章不存在");
         }

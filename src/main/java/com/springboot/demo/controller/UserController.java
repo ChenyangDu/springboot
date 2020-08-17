@@ -27,6 +27,8 @@ public class UserController {
     private User_groupRespository user_groupRespository;
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public User getById(Integer id){
         if(id == null){
@@ -201,6 +203,27 @@ public class UserController {
         return document;
     }
     public Document superFuck(Document document,int user_id){
+        Integer doc_id=document.getId();
+        Optional<Document> optionalDocument = documentRepository.findById(doc_id);
+        Document tmpDoc=optionalDocument.get();
+        //评论数
+        Comment comment = new Comment();
+        comment.setDocument_id(doc_id);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("doc_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("comment_id");
+        Example<Comment>example = Example.of(comment,matcher);
+        List<Comment> list = commentRepository.findAll(example);
+        tmpDoc.setComments(list.size());
+        //收藏数
+        ExampleMatcher matchera = ExampleMatcher.matching()
+                .withMatcher("document_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("user_id");
+        Favorite favorite=new Favorite();
+        favorite.setFavorityKey(new FavorityKey(null,doc_id));
+        Example examplea = Example.of(favorite,matchera);
+        List<Favorite> favoriteList=favoriteRepository.findAll(examplea);
+        tmpDoc.setStars(favoriteList.size());
         document.setStar(favoriteRepository.findById(new FavorityKey(user_id,document.getId())).isPresent());
         return fuck(document);
     }

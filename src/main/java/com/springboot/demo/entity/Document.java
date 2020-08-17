@@ -27,11 +27,16 @@ public class Document {
     private boolean is_editting;
     private String name;
     private Integer edit_times;
+    private Integer views;
 
     @Transient
     private String username;
     @Transient
     private boolean star;
+    @Transient
+    private Integer stars;
+    @Transient
+    private Integer comments;
 
     public boolean isIs_deleted() {
         return is_deleted;
