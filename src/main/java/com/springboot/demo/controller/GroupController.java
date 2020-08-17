@@ -66,7 +66,8 @@ public class GroupController {
     }
 
     @GetMapping("/group/document")
-    public Result document(@RequestParam("group_id") int group_id){
+    public Result document(@RequestParam("group_id") int group_id,
+                           @RequestParam("user_id") int user_id){
         List<Document> list = new ArrayList<>();
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("group_id",ExampleMatcher.GenericPropertyMatcher::exact)
@@ -101,6 +102,9 @@ public class GroupController {
             Example examplea = Example.of(favorite,matchera);
             List<Favorite> favoriteList=favoriteRepository.findAll(examplea);
             tmpDoc.setStars(favoriteList.size());
+        }
+        for(Document d : list){
+            superFuck(d,user_id);
         }
         return Result.success(list);
     }
