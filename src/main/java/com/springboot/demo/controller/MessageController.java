@@ -35,7 +35,7 @@ public class MessageController {
         List <Message> all = messageRepository.findAll();
         List<Message> list = new ArrayList<>();
         for(Message message : all){
-            if(message.getReceiver_id() == user_id){
+            if(message.getReceiver_id().equals(user_id)){
                 list.add(message);
             }
         }
