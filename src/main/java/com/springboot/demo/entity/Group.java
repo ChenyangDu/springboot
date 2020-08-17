@@ -9,7 +9,7 @@ import javax.persistence.Id;
 @Data
 public class Group {
     @Id
-    private Integer id;
-    private String name;
-    private Integer creator_id;
+    public Integer id;
+    public String name;
+    public Integer creator_id;
 }

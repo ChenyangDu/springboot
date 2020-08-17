@@ -6,6 +6,7 @@ import com.springboot.demo.entity.User;
 import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.GroupRepository;
 import com.springboot.demo.repository.UserRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
@@ -54,13 +55,28 @@ public class SearchController {
     @GetMapping("/group")
     public Result group(@RequestParam("key") String key){
         List<Group> list = groupRepository.findAll();
-        List<Group> result = new ArrayList<>();
+        List<GroupFuck> result = new ArrayList<>();
         for(Group group : list){
             if(group.getName() != null && group.getName().contains(key)){
-                result.add(group);
+                result.add(new GroupFuck(group));
             }
         }
+        System.out.println(result.toString());
         return Result.success(result);
+    }
+
+    @Data
+    private class GroupFuck extends Group{
+        private String creator_name;
+        public GroupFuck(Group group){
+            User user = userRepository.findById(group.getCreator_id()).orElse(null);
+            if(user != null){
+                creator_name = user.getName();
+            }
+            id = group.getId();
+            creator_id = group.getCreator_id();
+            name = group.getName();
+        }
     }
 
 }

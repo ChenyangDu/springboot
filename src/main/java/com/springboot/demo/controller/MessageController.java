@@ -9,10 +9,9 @@ import com.springboot.demo.repository.GroupRepository;
 import com.springboot.demo.repository.MessageRepository;
 import com.springboot.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,16 +32,13 @@ public class MessageController {
 
     @GetMapping("/user")
     private Result user(@RequestParam("user_id") Integer user_id){
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withMatcher("receive_id",ExampleMatcher.GenericPropertyMatcher::exact)
-                .withIgnorePaths("id").withIgnorePaths("sender_id").withIgnorePaths("docu_id")
-                .withIgnorePaths("group_id").withIgnorePaths("have_read").withIgnorePaths("message_type")
-                .withIgnorePaths("time").withIgnorePaths("operate");
-
-        Message message = new Message();
-        message.setReceiver_id(user_id);
-        Example example = Example.of(message,matcher);
-        List <Message> list = messageRepository.findAll(example);
+        List <Message> all = messageRepository.findAll();
+        List<Message> list = new ArrayList<>();
+        for(Message message : all){
+            if(message.getReceiver_id() == user_id){
+                list.add(message);
+            }
+        }
         for(Message message1 : list){
             fuck(message1);
         }
