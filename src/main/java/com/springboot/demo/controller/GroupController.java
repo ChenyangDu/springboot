@@ -135,6 +135,7 @@ public class GroupController {
         Message tmpmsg=optionalMessage.get();
         if(yesno){
             tmpmsg.setOperate(2);
+            tmpmsg.setHave_read(true);
             messageRepository.save(tmpmsg);
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
                     optionalGroup.get().getCreator_id(),user_id,null,group_id, AGREE_INVITE.ordinal(),false,Global.nowTime(),0);
@@ -146,6 +147,7 @@ public class GroupController {
         }
         else{
             tmpmsg.setOperate(3);
+            tmpmsg.setHave_read(true);
             messageRepository.save(tmpmsg);
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
                     optionalGroup.get().getCreator_id(),user_id,null,group_id, REJECT_INVITE.ordinal(),false,Global.nowTime(),0);
@@ -162,6 +164,7 @@ public class GroupController {
         Message tmpmsg=optionalMessage.get();
         if(yesno){
             tmpmsg.setOperate(2);
+            tmpmsg.setHave_read(true);
             messageRepository.save(tmpmsg);
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
                     user_id,optionalGroup.get().getCreator_id(),null,group_id, AGREE_APPLY.ordinal(),false,Global.nowTime(),0);
@@ -172,6 +175,7 @@ public class GroupController {
         }
         else{
             tmpmsg.setOperate(3);
+            tmpmsg.setHave_read(true);
             messageRepository.save(tmpmsg);
             Message message=new Message((int) (System.currentTimeMillis()%2000000011),
                     user_id,optionalGroup.get().getCreator_id(),null,group_id, REJECT_APPLY.ordinal(),false,Global.nowTime(),0);
