@@ -91,7 +91,7 @@ public class GroupController {
                     .withMatcher("doc_id",ExampleMatcher.GenericPropertyMatcher::exact)
                     .withIgnorePaths("comment_id");
             Example<Comment>exampleb = Example.of(comment,matcherb);
-            List<Comment> lista = commentRepository.findAll(example);
+            List<Comment> lista = commentRepository.findAll(exampleb);
             tmpDoc.setComments(lista.size());
             //收藏数
             ExampleMatcher matchera = ExampleMatcher.matching()
