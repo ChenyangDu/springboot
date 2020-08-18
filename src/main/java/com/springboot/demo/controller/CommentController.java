@@ -48,6 +48,7 @@ public class CommentController {
         message.setHave_read(false);
         message.setMessage_type(MessageType.COMMENT.ordinal());
         message.setOperate(0);
+        message.setTime(Global.nowTime());
         messageRepository.save(message);
 
         return Result.success(comment);
