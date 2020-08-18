@@ -19,7 +19,7 @@ public class MainApplication {
 
     private static void init(){
         List<String> list = Arrays.asList( Global.DOCUMENT_PATH,Global.AVATAR_PATH,Global.SYSTEM_PATH,
-                Global.DOC_IMG_PATH,Global.DOCUMENT_MODEL_PATH);
+                Global.DOC_IMG_PATH,Global.DOCUMENT_MODEL_PATH,Global.INTRODUCTION_PATH);
         for(String path : list){
             File file =  new File(path);
             if(!file.exists()){

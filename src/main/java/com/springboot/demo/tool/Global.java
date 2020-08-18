@@ -11,6 +11,8 @@ public class Global {
     public final static String DOCUMENT_MODEL_PATH = DOCUMENT_PATH + "model/";
     public final static String AVATAR_PATH = ROOT_PATH + "avatar/";
     public final static String SYSTEM_PATH = ROOT_PATH + "system/";
+    public final static String SPECIAL_DOCUMENT_PATH = ROOT_PATH + "special/";
+    public final static String INTRODUCTION_PATH = SPECIAL_DOCUMENT_PATH + "introduction/";
 
     public static Date nowTime(){
         Date now = new Date(System.currentTimeMillis());
