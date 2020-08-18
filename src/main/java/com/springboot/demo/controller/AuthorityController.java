@@ -6,6 +6,8 @@ import com.springboot.demo.repository.DocumentRepository;
 import com.springboot.demo.repository.MessageRepository;
 import com.springboot.demo.tool.Global;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,8 +90,28 @@ public class AuthorityController {
     @GetMapping("/authority/users")
     public Result users(@RequestParam("doc_id")int doc_id, @RequestParam("users")Integer users_id[]){
         List<Integer> list = new ArrayList<Integer>();
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("document_id", ExampleMatcher.GenericPropertyMatcher::exact)
+                .withIgnorePaths("user_id").withIgnorePaths("can_read")
+                .withIgnorePaths("can_comment").withIgnorePaths("can_edit")
+                .withIgnorePaths("can_delete");
+        Authority_user tmpauthority_user=new Authority_user();
+        tmpauthority_user.setAuthority_userKey(new Authority_userKey(null,doc_id));
+        Example<Authority_user> example = Example.of(tmpauthority_user,matcher);
+        List<Authority_user> authorityUsers=authorityRepository.findAll(example);
+        Authority_user authority_user_0=authorityOne(0,doc_id);
+        Authority_user authority_user=new Authority_user();
         for(Integer user_id : users_id){
-            Authority_user authority_user = authorityOne(user_id,doc_id);
+            authority_user.setAuthority_userKey(new Authority_userKey(user_id,doc_id));
+            for(Authority_user item:authorityUsers){
+                if(item.getAuthority_userKey().getUser_id().equals(user_id)&&
+                item.getAuthority_userKey().getDocument_id().equals(doc_id))
+                {
+                    authority_user.setCan_edit(item.isCan_edit() || authority_user_0.isCan_edit());
+                    authority_user.setCan_comment(item.isCan_comment() || authority_user_0.isCan_comment());
+                    authority_user.setCan_read(item.isCan_read()||authority_user_0.isCan_read());
+                }
+            }
             if(authority_user.isCan_edit()){
                 list.add(3);
             }else if(authority_user.isCan_comment()){
