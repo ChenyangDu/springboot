@@ -234,6 +234,15 @@ public class UserController {
         private Integer groups;
         private Integer views;
         public UserFuck(User user){
+            this.id = user.getId();
+            this.name = user.getName();
+            this.password = user.getPassword();
+            this.phone = user.getPhone();
+            this.email = user.getEmail();
+            this.qq = user.getQq();
+            this.wechat = user.getWechat();
+            this.sign = user.getSign();
+
             Document tmpDocu=new Document();
             tmpDocu.setCreator_id(id);
             tmpDocu.setIs_deleted(false);
