@@ -2,6 +2,7 @@ package com.springboot.demo.controller;
 
 import com.springboot.demo.entity.*;
 import com.springboot.demo.repository.*;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -98,7 +99,8 @@ public class UserController {
         System.out.println("userInfo"+id);
         Optional<User> optionalUser = userRepository.findById(id);
         if(optionalUser.isPresent()){
-            return Result.success(optionalUser.get());
+            User user=optionalUser.get();
+            return Result.success(new UserFuck(user));
         }else{
             return Result.error(400,"用户不存在");
         }
@@ -188,12 +190,7 @@ public class UserController {
                 list.add(optional.get());
             }
         }
-
-        if(list.size() > 0){
-            return Result.success(list);
-        }else{
-            return Result.error(400,"用户不存在或未参加团队");
-        }
+        return Result.success(list);
     }
     public Document fuck(Document document){
         User user = userRepository.findById(document.getCreator_id()).orElse(null);
@@ -226,5 +223,64 @@ public class UserController {
         tmpDoc.setStars(favoriteList.size());
         document.setStar(favoriteRepository.findById(new FavorityKey(user_id,document.getId())).isPresent());
         return fuck(document);
+    }
+
+
+
+    @Data
+    private class UserFuck extends User{
+        private Integer own_documents;
+        private Integer stars;
+        private Integer groups;
+        private Integer views;
+        public UserFuck(User user){
+            Document tmpDocu=new Document();
+            tmpDocu.setCreator_id(id);
+            tmpDocu.setIs_deleted(false);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withMatcher("creator_id", ExampleMatcher.GenericPropertyMatcher::exact)
+                    .withIgnorePaths("id")
+                    .withIgnorePaths("group_id")
+                    .withIgnorePaths("create_time")
+                    .withIgnorePaths("last_edit_time")
+                    .withIgnorePaths("is_editting")
+                    .withIgnorePaths("name");
+            Example <Document> example = Example.of(tmpDocu,matcher);
+            ExampleMatcher matchera = ExampleMatcher.matching()
+                    .withMatcher("document_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                    .withIgnorePaths("user_id");
+            Favorite favorite=new Favorite();
+            FavorityKey favorityKey=new FavorityKey(null,null);
+            Example examplea;
+            List<Favorite> favoriteList;
+            List<Document> myDocus=documentRepository.findAll(example);
+            own_documents=myDocus.size();
+            views=0;
+            stars=0;
+            for(Document item:myDocus){
+                views+=item.getViews();
+                favorityKey.setDocument_id(item.getId());
+                favorite.setFavorityKey(favorityKey);
+                examplea= Example.of(favorite,matchera);
+                favoriteList=favoriteRepository.findAll(examplea);
+                stars+=favoriteList.size();
+            }
+            List<Group> list = new ArrayList<>();
+            ExampleMatcher matcherb = ExampleMatcher.matching()
+                    .withMatcher("user_id",ExampleMatcher.GenericPropertyMatcher::exact)
+                    .withIgnorePaths("group_id");
+            User_group_relation user_group = new User_group_relation();
+            user_group.setUser_group_relationKey(new User_group_relationKey(id,null));
+            Example exampleb = Example.of(user_group,matcherb);
+            for(Object object : user_groupRespository.findAll(exampleb)){
+                User_group_relation user_group_relation = (User_group_relation) object;
+                int group_id = user_group_relation.getUser_group_relationKey().getGroup_id();
+                Optional<Group>optional = groupRepository.findById(group_id);
+                if(optional.isPresent()){
+                    list.add(optional.get());
+                }
+            }
+            groups=list.size();
+        }
     }
 }

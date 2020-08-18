@@ -1,9 +1,10 @@
 package com.springboot.demo.controller;
 
-import com.springboot.demo.entity.Authority_user;
-import com.springboot.demo.entity.Authority_userKey;
-import com.springboot.demo.entity.User;
+import com.springboot.demo.entity.*;
 import com.springboot.demo.repository.AuthorityRepository;
+import com.springboot.demo.repository.DocumentRepository;
+import com.springboot.demo.repository.MessageRepository;
+import com.springboot.demo.tool.Global;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,11 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.springboot.demo.entity.MessageType.INVITE;
+import static com.springboot.demo.entity.MessageType.SHARE_INFORM;
+
 @CrossOrigin
 @RestController
 public class AuthorityController {
     @Autowired
     private AuthorityRepository authorityRepository;
+    @Autowired
+    private DocumentRepository documentRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     private Authority_user authorityOne (Integer user_id,Integer doc_id){
         Authority_user au = new Authority_user(new Authority_userKey(user_id,doc_id),false,false,false,false);
@@ -70,6 +78,10 @@ public class AuthorityController {
         authority_user.setCan_comment(can_comment);
         authority_user.setCan_edit(can_edit);
         authorityRepository.save(authority_user);
+        Optional<Document> optionalDocument=documentRepository.findById(doc_id);
+        Message message=new Message((int) (System.currentTimeMillis()%2000000011),
+                user_id,optionalDocument.get().getCreator_id(),doc_id,null, SHARE_INFORM.ordinal(),false, Global.nowTime(),0);
+        messageRepository.save(message);
         return Result.success();
     }
 

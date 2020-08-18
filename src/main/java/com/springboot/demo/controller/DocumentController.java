@@ -207,7 +207,7 @@ public class DocumentController {
             }
             else {
                 document.setIs_editting(false);
-                Date now = new Date(System.currentTimeMillis());
+                Date now = Global.nowTime();
                 document.setEdit_times(document.getEdit_times()+1);
                 document.setLast_edit_time(now);
                 documentRepository.save(document);

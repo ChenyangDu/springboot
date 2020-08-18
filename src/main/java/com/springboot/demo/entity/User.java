@@ -10,11 +10,12 @@ import javax.persistence.Id;
 public class User {
 
     @Id
-    private Integer id;
-    private String name;
-    private String password;
-    private String phone;
-    private String wechat;
-    private String qq;
-    private String email;
+    protected Integer id;
+    protected String name;
+    protected String password;
+    protected String phone;
+    protected String wechat;
+    protected String qq;
+    protected String email;
+    protected String sign;
 }
