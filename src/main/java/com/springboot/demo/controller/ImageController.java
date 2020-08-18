@@ -32,6 +32,15 @@ public class ImageController {
             inputStream.read(bytes, 0, inputStream.available());
             return bytes;
         } catch (Exception e) {
+            try{
+                File file = new File(Global.AVATAR_PATH+"0.jpg");
+                FileInputStream inputStream = new FileInputStream(file);
+                byte[] bytes = new byte[inputStream.available()];
+                inputStream.read(bytes, 0, inputStream.available());
+                return bytes;
+            } catch (Exception e1) {
+
+            }
         }
         return null;
     }
