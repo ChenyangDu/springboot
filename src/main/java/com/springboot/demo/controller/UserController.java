@@ -242,7 +242,6 @@ public class UserController {
             this.qq = user.getQq();
             this.wechat = user.getWechat();
             this.sign = user.getSign();
-
             Document tmpDocu=new Document();
             tmpDocu.setCreator_id(id);
             tmpDocu.setIs_deleted(false);
