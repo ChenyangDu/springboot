@@ -2,10 +2,7 @@ package com.springboot.demo.controller;
 
 import com.springboot.demo.tool.FileTool;
 import com.springboot.demo.tool.Global;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -21,6 +18,12 @@ public class SpecialDocumentController {
         } catch (IOException e) {
             return Result.success("主人很懒，什么都没有留下");
         }
+    }
 
+    @PostMapping("/introduction/save")
+    public Result introductionSave(@RequestParam("user_id")int user_id,
+                                   @RequestBody String str){
+        FileTool.writeFile(Global.INTRODUCTION_PATH+user_id+".html",str);
+        return Result.success();
     }
 }
