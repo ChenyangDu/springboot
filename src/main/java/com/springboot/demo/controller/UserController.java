@@ -258,7 +258,9 @@ public class UserController {
             views=0;
             stars=0;
             for(Document item:myDocus){
-                views+=item.getViews();
+                if(item.getViews()==null)
+                    views+=0;
+                else views+=item.getViews();
                 favorityKey.setDocument_id(item.getId());
                 favorite.setFavorityKey(favorityKey);
                 examplea= Example.of(favorite,matchera);
