@@ -224,6 +224,7 @@ public class GroupController {
                 messageRepository.save(message);
             }
         }
+        groupRepository.delete(aimgroup);
         return Result.success();
     }
     public Document fuck(Document document){
