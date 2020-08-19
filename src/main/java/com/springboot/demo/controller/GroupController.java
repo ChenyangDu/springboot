@@ -35,6 +35,7 @@ public class GroupController {
     @PostMapping("/group/create")
     public Result create(@RequestBody Group group){
         group.setId((int) (System.currentTimeMillis()%2000000011));
+        group.setDismissed(false);
         System.out.println(group.toString());
         groupRepository.save(group);
 
@@ -215,6 +216,7 @@ public class GroupController {
         if(!aimgroup.getCreator_id().equals(user_id)){
             return Result.error(400,"用户无解散权限");
         }
+        aimgroup.setDismissed(true);
         List<User_group_relation> relations=user_groupRespository.findAll();
         for(User_group_relation relation:relations){
             if(relation.getUser_group_relationKey().getGroup_id().equals(group_id)){
@@ -224,7 +226,7 @@ public class GroupController {
                 messageRepository.save(message);
             }
         }
-        groupRepository.delete(aimgroup);
+        groupRepository.save(aimgroup);
         return Result.success();
     }
     public Document fuck(Document document){

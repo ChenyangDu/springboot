@@ -29,6 +29,8 @@ public class DocumentController {
     private Recent_readRepository recent_readRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @GetMapping("/document/create")
     public Result create(@RequestParam("user_id") Integer user_id,
