@@ -57,7 +57,7 @@ public class SearchController {
         List<Group> list = groupRepository.findAll();
         List<GroupFuck> result = new ArrayList<>();
         for(Group group : list){
-            if(group.getName() != null && group.getName().contains(key) &&!group.isDismissed()){
+            if(group.getName() != null && group.getName().contains(key)){
                 result.add(new GroupFuck(group));
             }
         }
