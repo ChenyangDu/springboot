@@ -103,9 +103,6 @@ public class AuthorityController {
         Authority_user authority_user=new Authority_user();
         for(Integer user_id : users_id){
             authority_user.setAuthority_userKey(new Authority_userKey(user_id,doc_id));
-            authority_user.setCan_edit(authority_user_0.isCan_edit());
-            authority_user.setCan_comment(authority_user_0.isCan_comment());
-            authority_user.setCan_read(authority_user_0.isCan_read());
             for(Authority_user item:authorityUsers){
                 if(item.getAuthority_userKey().getUser_id().equals(user_id)&&
                 item.getAuthority_userKey().getDocument_id().equals(doc_id))
